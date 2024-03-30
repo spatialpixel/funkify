@@ -1,0 +1,14 @@
+.dropdown-right {
+  --dropdown-right: 0;
+}
+.dropdown-wide {
+  --dropdown-width: 320px;
+}
+.dropdown-wider {
+  --dropdown-width: 500px;
+}
+.dropdown-big {
+  --dropdown-button-font-size: var(--nav-font-size);
+  --dropdown-button-border: none;
+  --dropdown-width: 640px;
+}
