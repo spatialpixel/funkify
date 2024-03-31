@@ -42,8 +42,9 @@
         
         <dropdown-menu class="dropdown-right dropdown-wide">
           <span slot="button-text">About</span>
-          <p>Funkily is a playground for experimenting with "function calling" in large
-            language models, specifically the GPT models from OpenAI.</p>
+          <p>Funkily is a playground for experimenting with 
+            <a href="https://platform.openai.com/docs/guides/function-calling" target="_blank">"function calling"</a>
+            in large language models, specifically the GPT models from OpenAI.</p>
           <p>This early version uses OpenAI's API, which requires an API key you can get
             <a href="https://platform.openai.com/" target="_blank">here</a>.
             Soon, this will leverage other hosted AI services with the same API.</p>
@@ -58,14 +59,39 @@
       <main>
         <div id="chat" class="column column-9">
           <div id="chat-header" class="row">
-            <div class="column-6"><h3>Chat</h3></div>
-            <div class="column-6"><h3>Function Calls</h3></div>
+            <div class="column-6">
+              <h3>Chat</h3>
+              
+              <div style="flex-grow:2"></div>
+              
+              <dropdown-menu class="dropdown-widest">
+                <span slot="button-text">Context</span>
+                <textarea id="system-context">You are a helpful assistant.</textarea>
+                <p>(Changes to this aren't recognized after your first message.)</p>
+              </dropdown-menu>
+              
+              <select id="model-picker">
+                <option value="gpt-4">gpt-4</option>
+                <option value="gpt-4-turbo-preview">gpt-4-turbo-preview</option>
+                <option value="gpt-4-0125-preview">gpt-4-0125-preview</option>
+                <option value="gpt-4-1106-preview">gpt-4-1106-preview</option>
+                <option value="gpt-4-0613">gpt-4-0613</option>
+                <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                <option value="gpt-3.5-turbo-0125">gpt-3.5-turbo-0125</option>
+                <option value="gpt-3.5-turbo-1106">gpt-3.5-turbo-1106</option>
+                <option value="gpt-3.5-turbo-0613">gpt-3.5-turbo-0613</option>
+              </select>
+            </div>
+            
+            <div class="column-6">
+              <h3>Function Calls</h3>
+            </div>
           </div>
           <div id="messages-list"></div>
           
           <div class="prompt">
             <div class="column-6">
-              <textarea id="prompt" placeholder="Chat with OpenAI"></textarea>
+              <textarea id="prompt" placeholder="Chat with OpenAI (Cmd+Enter or Ctrl+Enter to Send)"></textarea>
             </div>
             <div class="column-6"></div>
           </div>

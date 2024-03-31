@@ -24,18 +24,10 @@ if (document.readyState === 'complete') {
 
 function onReady () {
   state = new State();
-  state.messages = [
-    {
-      role: 'system',
-      content: 'You are a helpful assistant.'
-    }
-  ];
-  
+  state.messages = [];
   state.tools = examples;
-  
   state.openAIApiKeyChanged = false;
   state.openai = null;
-  
   state.chatHandler = new ChatHandler();
   
   initializePrompt();
@@ -48,6 +40,9 @@ function onReady () {
   
   const toolsList = document.querySelector('tools-list');
   toolsList.populate(state);
+  
+  const modelPicker = document.querySelector('select#model-picker');
+  modelPicker.value = "gpt-4-turbo-preview";
 }
 
 function addToggleVisibilityButton () {
@@ -93,7 +88,7 @@ function initializePrompt () {
         event.preventDefault();
         const content = promptArea.value;
         
-        console.log("Submit:", content);
+        console.log("User prompt to submit: ", content);
         
         const message = {
           role: 'user',
@@ -193,15 +188,33 @@ class ChatHandler {
       initializeOpenAI();
     }
     
+    if (_.isEmpty(state.messages)) {
+      const systemContextInput = document.querySelector('textarea#system-context');
+      
+      console.log("System context: ", systemContextInput.value);
+      
+      state.messages.push({
+        role: 'system',
+        content: systemContextInput.value
+      });
+      
+      systemContextInput.setAttribute('disabled', true);
+    }
+    
     if (userMessage) {
       state.messages.push(userMessage);
       addMessageToList(userMessage);
     }
     
+    const modelPicker = document.querySelector('select#model-picker');
+    const currentModel = modelPicker.value;
+    
+    console.log("Model: ", currentModel);
+    
     const tools = _.map(state.tools, 'schema');
     
     const completion = await state.openai.chat.completions.create({
-      model: 'gpt-4-turbo-preview',
+      model: currentModel,
       messages: state.messages,
       tools,
       stream: true,
@@ -343,13 +356,14 @@ class State {
     
     this.handler = {
       get: (target, key) => {
-        console.log(`Getting property '${key}'`);
+        //console.debug(`Getting property '${key}'`);
         return target[key];
       },
       
       set: (target, key, value) => {
-        console.log(`Setting property '${key}' to '${value}'`);
+        //console.debug(`Setting property '${key}' to '${value}'`);
         
+        // TODO To be used later.
         // Send a change event.
         const customEvent = new CustomEvent('StateUpdate', {
           detail: {
