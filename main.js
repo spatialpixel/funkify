@@ -75,11 +75,11 @@ function initializeOpenAI () {
 function apiKeyHandler (value, event) {
   state.apiKey = value;
   state.openAIApiKeyChanged = true;
-  localStorage.setItem('funky-openai-api-key', state.apiKey);
+  localStorage.setItem('funkily-openai-api-key', state.apiKey);
 }
 
 function defaultApiKeyGetter () {
-  return localStorage.getItem('funky-openai-api-key');
+  return localStorage.getItem('funkily-openai-api-key');
 }
 
 function initializePrompt () {
