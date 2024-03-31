@@ -56,6 +56,60 @@
       </main>
     </div>
     
+    <template id="collapsible-element-template">
+      <style>
+        .collapsible-element {
+          display: flex;
+          flex-direction: row;
+          align-items: start;
+          gap: 5px;
+        }
+        .collapsible-left {
+          width: 30px;
+        }
+        .collapsible-body {
+          flex-grow: 2;
+        }
+        .collapsible-title {
+          padding-top: 3px;
+          height: 30px;
+        }
+        .collapsible-content {
+          max-height: 200px;
+          overflow-y: scroll;
+          overflow-x: hidden;
+          white-space: preserve;
+          width: 100%;
+        }
+        .collapsible-content p {
+          margin-top: 0; /* Because there's weirdness when using innerHTML. */
+        }
+        button.collapsible-toggle {
+          font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+          border: none;
+          background-color: transparent;
+          padding: 8px;
+          width: 30px;
+          height: 30px;
+        }
+        button.collapsible-toggle:hover {
+          background-color: #f90;
+        }
+      </style>
+      
+      <div class="collapsible-element">
+        <div class="collapsible-left">
+          <button class="collapsible-toggle">→</button>
+        </div>
+        <div class="collapsible-body">
+          <div class="collapsible-title">
+            <slot name="title">Title</slot>
+          </div>
+          <div class="collapsible-content" style="display: none;"><slot></slot></div> <!-- keep this on one line because whitespace -->
+        </div>
+      </div>
+    </template>
+    
     <template id="parameter-item-template">
       <style>
         .parameter-item {
@@ -356,12 +410,15 @@
     <template id="tools-list-template">
       <style>
         .tool-item {
-          font-size: 1.2rem;
+          /* font-size: 1.2rem; */
           margin-bottom: 5px;
           padding: 8px 0;
           position: relative;
           display: flex;
           flex-direction: row;
+        }
+        .name {
+          font-weight: bold;
         }
         .tool-left {
           flex-grow: 2;

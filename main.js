@@ -1,8 +1,11 @@
 import './style.css';
+
 import './dropdown-menu.js';
 import './tools-list.js';
 import './tool-editor.js';
 import './parameter-item.js';
+import './collapsible-element.js';
+
 import * as Interface from './interface.js';
 import examples from './example_functions.js';
 
@@ -117,7 +120,7 @@ function focusPrompt () {
   promptArea.focus();
 }
 
-function addMessageToList (message, rightMessage) {
+function addMessageToList (message, rightMessage, collapsible=false) {
   const messagesList = document.querySelector('#messages-list');
   
   const messageDiv = document.createElement('div');
@@ -137,8 +140,17 @@ function addMessageToList (message, rightMessage) {
   } else {
     leftDiv.innerHTML = '&nbsp;';
   }
+  
   if (rightMessage) {
-    rightDiv.innerHTML = marked.parse(rightMessage.content);
+    const renderedContent = marked.parse(rightMessage.content);
+    
+    if (collapsible) {
+      const collapsible = document.createElement('collapsible-element');
+      collapsible.populate('Response', renderedContent);
+      rightDiv.appendChild(collapsible);
+    } else {
+      rightDiv.innerHTML = renderedContent;
+    }
   }
   
   messagesList.appendChild(messageDiv);
@@ -246,7 +258,7 @@ class ChatHandler {
         
         const pseudoMessage1 = {
           id: tool_call.id,
-          content: `ƒ ${function_name} → ${tool_call.function.arguments}`
+          content: `**ƒ ${function_name}** → ${tool_call.function.arguments}`
         };
         addMessageToList(null, pseudoMessage1);
         
@@ -258,7 +270,7 @@ class ChatHandler {
           id: tool_call.id + "-response",
           content: prettyString(function_result)
         };
-        addMessageToList(null, pseudoMessage2);
+        addMessageToList(null, pseudoMessage2, true);
         
         const functionResponseMessage = {
           "tool_call_id": tool_call.id,

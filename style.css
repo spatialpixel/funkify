@@ -67,6 +67,7 @@ main {
 .prompt {
   display: flex;
   flex-direction: row;
+  gap: 10px;
   padding-top: 20px;
 }
 .column-8 {
@@ -94,20 +95,18 @@ main {
   text-wrap: pretty;
   overflow-wrap: anywhere;
 }
-.message .right, .message .right p {
-  white-space: preserve;
-  margin: 0;
-}
-.message .right {
-  max-height: 200px;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
 
 .message {
   display: flex;
   flex-direction: row;
   /* margin-bottom: 10px; */
+  gap: 10px;
+}
+.message>.left {
+  padding-left: 11px;
+}
+.message>.right>p {
+  margin: 0;
 }
 
 textarea#prompt {
