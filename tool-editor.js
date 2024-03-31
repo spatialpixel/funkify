@@ -25,6 +25,9 @@ class ToolEditor extends HTMLElement {
       const functionDescriptionField = this.shadowRoot.querySelector('.function-description-field');
       this.tool.description = functionDescriptionField.value;
       
+      const functionImplementationField = this.shadowRoot.querySelector('.function-implementation');
+      this.tool.f = functionImplementationField.value;
+      
       // Loop through all the parameters' properties and gather them up.
       const properties = {};
       const required = [];
@@ -109,6 +112,9 @@ class ToolEditor extends HTMLElement {
       const param = this.renderParameterForm(value, name, tool.required);
       parametersList.appendChild(param);
     });
+    
+    const functionImplementationField = this.shadowRoot.querySelector('.function-implementation');
+    functionImplementationField.value = tool.f;
   }
   
   renderParameterForm (value, name, required) {

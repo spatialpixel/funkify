@@ -29,9 +29,7 @@ class ToolsList extends HTMLElement {
       const id = uuidv4();
       const parameters = {};
       const required = [];
-      const f = async args => {
-        return "true";
-      };
+      const f = `return "Success";`;
       
       const newFunction = new FunctionTool(id, name, description, parameters, required, f);
       state.tools.push(newFunction);

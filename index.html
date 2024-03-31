@@ -60,8 +60,8 @@
       <style>
         .tool-editor {
           position: absolute;
-          width: 700px;
-          left: calc(50% - 700px / 2);
+          left: 100px;
+          right: 100px;
           top: 100px;
           bottom: 100px;
           z-index: 100;
@@ -71,7 +71,7 @@
           background-color: white;
           
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
         }
         .tool-editor-header {
           display: flex;
@@ -115,6 +115,11 @@
           padding-left: 0;
           padding-right: 0;
           border: none;
+        }
+        .function-implementation {
+          resize: none;
+          width: calc(100% - 30px);
+          flex-grow: 2;
         }
         
         .parameter {
@@ -197,26 +202,49 @@
           resize: vertical;
           outline: none;
         }
+        
+        .column-8 {
+          width: 66.6%;
+        }
+        .column-6 {
+          width: 50%;
+          display: flex;
+          flex-direction: column;
+        }
+        .column-4 {
+          width: 33.3%;
+        }
       </style>
       
       <div class="tool-editor">
-        <div class="tool-editor-header">
-          <input class="function-name-field" />
-          <button class="tool-editor-closer">×</button>
-        </div>
-        
-        <div class="tool-editor-main">
-          <textarea class="function-description-field"></textarea>
+        <div class="column-6">
+          <div class="tool-editor-header">
+            <input class="function-name-field" />
+            <button class="tool-editor-closer">×</button>
+          </div>
           
-          <h2>Parameters</h2>
-          <div class="parameters-list">
+          <div class="tool-editor-main">
+            <textarea class="function-description-field"></textarea>
+            
+            <h2>Parameters</h2>
+            <div class="parameters-list">
+            </div>
+          </div>
+          
+          <div class="tool-editor-footer">
+            <div style="flex-grow: 2"></div>
+            <button class="add-parameter">Add Parameter</button>
           </div>
         </div>
         
-        <div class="tool-editor-footer">
-          <button class="tool-save">Save Function</button>
-          <div style="flex-grow: 2"></div>
-          <button class="add-parameter">Add Parameter</button>
+        <div class="column-6">
+          Implementation
+          <textarea class="function-implementation"></textarea>
+          
+          <div class="tool-editor-footer">
+            <button class="tool-save">Save Function</button>
+            <div style="flex-grow: 2"></div>
+          </div>
         </div>
       </div>
     </template>

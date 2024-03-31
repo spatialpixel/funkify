@@ -27,14 +27,12 @@ function onReady () {
     }
   ];
   
-  const f = async args => {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${args.latitude}&longitude=${args.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall`;
-    
-    const result = await fetch(url);
-    const response = await result.json();
-    
-    return response;
-  };
+  const f = `const url = \`https://api.open-meteo.com/v1/forecast?latitude=\${args.latitude}&longitude=\${args.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall\`;
+
+const result = await fetch(url);
+const response = await result.json();
+
+return response;`
   
   state.tools = [
     new FunctionTool(
