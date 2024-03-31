@@ -4,7 +4,7 @@ import './tools-list.js';
 import './tool-editor.js';
 import './parameter-item.js';
 import * as Interface from './interface.js';
-import { FunctionTool } from './function.js';
+import examples from './example_functions.js';
 
 import OpenAI from 'openai';
 import _ from 'lodash';
@@ -28,38 +28,7 @@ function onReady () {
     }
   ];
   
-  const f = `const url = \`https://api.open-meteo.com/v1/forecast?latitude=\${args.latitude}&longitude=\${args.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall\`;
-
-const result = await fetch(url);
-const response = await result.json();
-
-return response;`
-  
-  state.tools = [
-    new FunctionTool(
-      'bf194fe8-66eb-4510-9bcf-b80cb7017618',
-      'get_current_weather',
-      'Tells the current weather given a location',
-      {
-        'location': {
-          'type': 'string',
-          'description': 'The location the user is asking about.'
-        },
-        
-        'latitude': {
-          'type': 'number',
-          'description': 'The latitude of the location the user is asking about.'
-        },
-        
-        'longitude': {
-          'type': 'number',
-          'description': 'The longitude of the location the user is asking about.'
-        }
-      },
-      ['latitude', 'longitude'],
-      f
-    )
-  ];
+  state.tools = examples;
   
   state.openAIApiKeyChanged = false;
   state.openai = null;

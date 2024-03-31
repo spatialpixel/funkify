@@ -31,15 +31,16 @@ class ToolEditor extends HTMLElement {
       // Loop through all the parameters' properties and gather them up.
       const properties = {};
       const required = [];
-      const parameters = this.shadowRoot.querySelectorAll('.parameter');
+      const parameters = this.shadowRoot.querySelectorAll('parameter-item');
+      
       for (const parameter of parameters) {
-        const parameterNameElt = parameter.querySelector('.parameter-name');
+        const parameterNameElt = parameter.shadowRoot.querySelector('.parameter-name');
         const parameterName = parameterNameElt.value;
         
-        const parameterDescElt = parameter.querySelector('.parameter-description');
+        const parameterDescElt = parameter.shadowRoot.querySelector('.parameter-description');
         const parameterDesc = parameterDescElt.value;
         
-        const parameterTypeElt = parameter.querySelector('.parameter-type');
+        const parameterTypeElt = parameter.shadowRoot.querySelector('.parameter-type');
         const parameterType = parameterTypeElt.value;
         
         properties[parameterName] = {
@@ -47,7 +48,7 @@ class ToolEditor extends HTMLElement {
           type: parameterType,
         };
         
-        const parameterReqElt = parameter.querySelector('.parameter-required');
+        const parameterReqElt = parameter.shadowRoot.querySelector('.parameter-required');
         const parameterReq = parameterReqElt.value;
         if (parameterReq) {
           required.push(parameterName);

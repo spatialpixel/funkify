@@ -12,8 +12,17 @@ export class FunctionTool {
   
   async call (args) {
     const body = `return async () => { ${this.f} }`
-    const callable = new Function('args', body);
-    return await callable(args)();
+    
+    let result
+    try {
+      const callable = new Function('args', body);
+      result = await callable(args)();
+    } catch (err) {
+      console.error('Error in Function call:', err);
+      result = err;
+    }
+    
+    return result;
   }
   
   get schema () {

@@ -26,7 +26,7 @@ class ToolsList extends HTMLElement {
     newFunctionButton.addEventListener('click', event => {
       const name = 'new_function';
       const description = "A stub function that returns dummy data."
-      const id = uuidv4();
+      const id = 'tool-' + uuidv4();
       const parameters = {};
       const required = [];
       const f = `return "Success";`;
@@ -50,35 +50,52 @@ class ToolsList extends HTMLElement {
   
   addToolItem (tool) {
     const toolItem = document.createElement('div');
-    
     toolItem.classList.add('tool-item');
-    
     toolItem.setAttribute('id', tool.id);
+    
+    const toolItemLeft = document.createElement('div');
+    toolItemLeft.classList.add('tool-left');
+    toolItem.appendChild(toolItemLeft);
     
     const toolItemName = document.createElement('div');
     toolItemName.classList.add('name');
     toolItemName.innerHTML = tool.name;
-    toolItem.appendChild(toolItemName);
+    toolItemLeft.appendChild(toolItemName);
     
     const toolItemDescription = document.createElement('div');
     toolItemDescription.classList.add('description');
     toolItemDescription.innerHTML = tool.description;
-    toolItem.appendChild(toolItemDescription);
+    toolItemLeft.appendChild(toolItemDescription);
     
-    toolItem.addEventListener('click', event => {
+    toolItemLeft.addEventListener('click', event => {
       this.editTool(tool, this.state);
-    })
+    });
+    
+    const toolItemRight = document.createElement('div');
+    toolItemRight.classList.add('tool-right');
+    toolItem.appendChild(toolItemRight);
+    
+    const toolRemoveButton = document.createElement('button');
+    toolRemoveButton.classList.add('remove-tool');
+    toolRemoveButton.innerHTML = '×';
+    toolRemoveButton.addEventListener('click', event => {
+      event.stopPropagation();
+      // Remove from the state.
+      _.remove(this.state.tools, t => t.name === tool.name);
+      toolItem.remove();
+    });
+    toolItemRight.appendChild(toolRemoveButton);
     
     return toolItem;
   }
   
   refresh () {
     for (const tool of this.tools) {
-      const toolElt = this.shadowRoot.querySelector(`#${tool.id}`);
+      let toolElt = this.shadowRoot.querySelector(`#${tool.id}`);
       if (!toolElt) {
         const toolsListElement = this.shadowRoot.querySelector('.tools-list-main');
-        const toolItem = this.addToolItem(tool);
-        toolsListElement.appendChild(toolItem);
+        toolElt = this.addToolItem(tool);
+        toolsListElement.appendChild(toolElt);
       }
       
       const toolItemName = toolElt.querySelector(`.name`);
