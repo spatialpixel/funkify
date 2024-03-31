@@ -79,41 +79,64 @@
           gap: 10px;
           height: 50px;
           align-items: center;
-          padding: 20px;
+          padding: 20px 20px 0 20px;
         }
         .tool-editor-main {
           flex-grow: 2;
           overflow-y: scroll;
           overflow-x: hidden;
-          padding: 20px;
+          padding: 0 20px 0 20px;
         }
         .tool-editor-footer {
           display: flex;
           flex-direction: row-reverse;
           gap: 10px;
-          height: 50px;
+          height: 60px;
           align-items: center;
-          padding: 20px;
+          padding: 0 20px 0 20px;
+        }
+        
+        .function-name-field {
+          font-weight: bold;
+          border: none;
+          border-bottom: 1px solid transparent;
+          border-radius: 0;
+          font-size: 1.8rem;
+          padding-left: 0;
+          padding-right: 0;
+        }
+        .function-name-field:hover {
+          background-color: #f90;
+        }
+        .function-name-field:active {
+          border-bottom: 1px solid black;
+        }
+        .function-description-field {
+          padding-left: 0;
+          padding-right: 0;
+          border: none;
         }
         
         .parameter {
-          border-top: 2px solid #222;
           padding: 8px 0;
         }
         .parameter-header {
           display: flex;
           flex-direction: row;
           gap: 10px;
-          justify-content: space-between;
+          /* justify-content: space-between; */
         }
         .parameter-header div:first-child {
-          /* flex-grow: 2; */
+          flex-grow: 2;
+        }
+        .parameter-header div:nth-child(2) {
+          min-width: 150px;
         }
         .parameter-header-buttons {
           display: flex;
           flex-direction: column;
           min-width: 40px;
-          /* align-items: start; */
+          justify-content: center;
         }
         input[type=checkbox] {
           width: 15px;
@@ -161,30 +184,28 @@
           border-radius: 4px;
           border-width: 1px;
           font-size: 1.2rem;
+          outline: none;
         }
         textarea {
           font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-          width: calc(100% - 22px);
+          width: calc(100% - 2px);
           padding: 10px;
           margin: 5px 0 0 0;
           border-radius: 4px;
           border-width: 1px;
           font-size: 1.2rem;
           resize: vertical;
+          outline: none;
         }
       </style>
       
       <div class="tool-editor">
         <div class="tool-editor-header">
-          <h2>Function editor</h2>
-          <div style="flex-grow:2"></div>
+          <input class="function-name-field" />
           <button class="tool-editor-closer">×</button>
         </div>
         
         <div class="tool-editor-main">
-          <h2>Function Name</h2>
-          <input class="function-name-field" />
-          <h2>Function Description</h2>
           <textarea class="function-description-field"></textarea>
           
           <h2>Parameters</h2>

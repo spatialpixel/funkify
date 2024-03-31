@@ -26,6 +26,15 @@ function onReady () {
     }
   ];
   
+  const f = async args => {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${args.latitude}&longitude=${args.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall`;
+    
+    const result = await fetch(url);
+    const response = await result.json();
+    
+    return response;
+  };
+  
   state.tools = [
     new FunctionTool(
       'bf194fe8-66eb-4510-9bcf-b80cb7017618',
@@ -47,7 +56,8 @@ function onReady () {
           'description': 'The longitude of the location the user is asking about.'
         }
       },
-      ['latitude', 'longitude']
+      ['latitude', 'longitude'],
+      f
     )
   ];
   
@@ -332,17 +342,19 @@ function stringify (function_result) {
 
 
 class FunctionTool {
-  constructor (id, name, description, properties, required) {
+  constructor (id, name, description, properties, required, f) {
     this.id = id;
     this.name = name;
     this.description = description;
     
     this.properties = properties;
     this.required = required;
+    
+    this.f = f;
   }
   
-  call (args) {
-    return "success";
+  async call (args) {
+    return await this.f(args);
   }
   
   get schema () {
