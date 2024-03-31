@@ -44,9 +44,24 @@ function onReady () {
   Interface.initializeTextInput('#openai-api-key', apiKeyHandler, defaultApiKeyGetter);
   // initializeTextInput does not call the setter by default.
   state.apiKey = defaultApiKeyGetter();
+  addToggleVisibilityButton();
   
   const toolsList = document.querySelector('tools-list');
   toolsList.populate(state);
+}
+
+function addToggleVisibilityButton () {
+  const togglePasswordVisibility = () => {
+    const apiKeyInput = document.querySelector('input#openai-api-key');
+    if (apiKeyInput.type === 'text') {
+      apiKeyInput.type = 'password';
+    } else {
+      apiKeyInput.type = 'text';
+    }
+  };
+  
+  const toggleButton = document.getElementById('toggle-openai-key-visibility');
+  toggleButton.addEventListener('click', togglePasswordVisibility);
 }
 
 function initializeOpenAI () {

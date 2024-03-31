@@ -155,6 +155,30 @@ button {
   padding: 4px 6px;
 }
 
+#open-api-key-form {
+  position: relative;
+}
+#openai-api-key {
+  width: calc(100% - 20px);
+}
+#toggle-openai-key-visibility {
+  position: absolute;
+  z-index: 2;
+  right: 5px;
+  top: 11px;
+  border: none;
+  background-color: transparent;
+}
+#toggle-openai-key-visibility:hover {
+  border: 2px solid gray;
+  right: 3px;
+  top: 9px;
+  border-radius: 20px;
+}
+#toggle-openai-key-visibility:active {
+  border-color: var(--border-color);
+}
+
 /* From https://github.com/vineethtrv/css-loader */
 .loader {
   display: none;
