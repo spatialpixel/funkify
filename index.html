@@ -56,6 +56,135 @@
       </main>
     </div>
     
+    <template id="parameter-item-template">
+      <style>
+        .parameter-item {
+          padding: 8px 0 8px 0;
+          margin-bottom: 10px;
+          display: flex;
+          flex-direction: row;
+        }
+        .parameter-left { 
+          width: 200px;
+        }
+        .parameter-middle {
+          border-left: 2px solid #222;
+          border-top: 2px solid #222;
+          border-bottom: 2px solid #222;
+          width: 10px;
+          margin-right: 10px;
+        }
+        .parameter-right {
+          flex-grow: 2;
+        }
+        .parameter-header {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 20px;
+        }
+        input.parameter-name {
+          outline: none;
+          border: none;
+          font-weight: bold;
+          padding: 8px 0;
+          border-bottom: 2px solid #222;
+          border-radius: 0;
+          width: 100%;
+        }
+        label {
+          font-size: 1.2rem;
+        }
+        input[type=checkbox] {
+          width: 16px;
+          height: 16px;
+        }
+        select.parameter-type {
+          width: 200px;
+          border: none;
+          border-bottom: 2px solid #222;
+          border-radius: 0;
+          padding: 10px 0;
+        }
+        textarea.parameter-description {
+          border-radius: 0;
+          border: none;
+          padding: 10px 0;
+        }
+        button.remove-parameter {
+          color: red;
+          border: none;
+        }
+        button.remove-parameter:hover {
+          background-color: darkred;
+        }
+        
+        button {
+          font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+          border: 2px solid var(--border-color);
+          border-radius: 3px;
+          color: var(--text-color);
+          background-color: var(--background-color);
+          padding: 4px 6px;
+          font-size: 1.2rem;
+        }
+        button:hover {
+          background-color: #f90;
+        }
+        input, select {
+          font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+          width: calc(100% - 22px);
+          padding: 10px;
+          margin: 5px 0 0 0;
+          border-radius: 4px;
+          border-width: 1px;
+          font-size: 1.2rem;
+          outline: none;
+        }
+        textarea {
+          font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+          width: calc(100% - 22px);
+          padding: 10px;
+          margin: 5px 0 0 0;
+          border-radius: 4px;
+          border-width: 1px;
+          font-size: 1.2rem;
+          resize: vertical;
+          outline: none;
+        }
+        input:hover, select:hover {
+          background-color: #f70;
+        }
+      </style>
+      
+      <div class="parameter-item">
+        <div class="parameter-left">
+          <input type="text" class="parameter-name" />
+        </div>
+        
+        <div class="parameter-middle"></div>
+        
+        <div class="parameter-right">
+          <div class="parameter-header">
+            <select class="parameter-type">
+              <option value="string">string</option>
+              <option value="number">number</option>
+            </select>
+            
+            <label>
+              <input type="checkbox" class="parameter-required" />&nbsp;Required
+            </label>
+            
+            <div style="flex-grow:2"></div>
+            
+            <button class="remove-parameter">×</button>
+          </div>
+          
+          <textarea class="parameter-description"></textarea>
+        </div>
+      </div>
+    </template>
+    
     <template id="tool-editor-template">
       <style>
         .tool-editor {
@@ -72,6 +201,9 @@
           
           display: flex;
           flex-direction: row;
+          gap: 20px;
+          
+          padding: 0 20px;
         }
         .tool-editor-header {
           display: flex;
@@ -79,13 +211,12 @@
           gap: 10px;
           height: 50px;
           align-items: center;
-          padding: 20px 20px 0 20px;
+          padding: 10px 0 0 0;
         }
         .tool-editor-main {
           flex-grow: 2;
           overflow-y: scroll;
           overflow-x: hidden;
-          padding: 0 20px 0 20px;
         }
         .tool-editor-footer {
           display: flex;
@@ -93,7 +224,6 @@
           gap: 10px;
           height: 60px;
           align-items: center;
-          padding: 0 20px 0 20px;
         }
         
         .function-name-field {
@@ -118,41 +248,9 @@
         }
         .function-implementation {
           resize: none;
-          width: calc(100% - 30px);
+          width: calc(100% - 24px);
           flex-grow: 2;
-        }
-        
-        .parameter {
-          padding: 8px 0;
-        }
-        .parameter-header {
-          display: flex;
-          flex-direction: row;
-          gap: 10px;
-          /* justify-content: space-between; */
-        }
-        .parameter-header div:first-child {
-          flex-grow: 2;
-        }
-        .parameter-header div:nth-child(2) {
-          min-width: 150px;
-        }
-        .parameter-header-buttons {
-          display: flex;
-          flex-direction: column;
-          min-width: 40px;
-          justify-content: center;
-        }
-        input[type=checkbox] {
-          width: 15px;
-          height: 15px;
-        }
-        button.remove-parameter {
-          color: red;
-          border: none;
-        }
-        button.remove-parameter:hover {
-          background-color: darkred;
+          border: 2px solid #222;
         }
         
         h2, h3 {
@@ -169,17 +267,6 @@
         }
         button:hover {
           background-color: #f90;
-        }
-        button.tool-editor-closer {
-          height: 40px;
-          width: 40px;
-          font-size: 30px;
-          line-height: 40px;
-          padding: 0 0 4px 0;
-          /* vertical-align: top; */
-          display: flex;
-          justify-content: center;
-          align-items: center;
         }
         input, select {
           font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
@@ -203,6 +290,18 @@
           outline: none;
         }
         
+        button.tool-editor-closer {
+          height: 40px;
+          width: 40px;
+          font-size: 30px;
+          line-height: 40px;
+          padding: 0 0 4px 0;
+          /* vertical-align: top; */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        
         .column-8 {
           width: 66.6%;
         }
@@ -220,13 +319,10 @@
         <div class="column-6">
           <div class="tool-editor-header">
             <input class="function-name-field" />
-            <button class="tool-editor-closer">×</button>
           </div>
           
           <div class="tool-editor-main">
             <textarea class="function-description-field"></textarea>
-            
-            <h2>Parameters</h2>
             <div class="parameters-list">
             </div>
           </div>
@@ -238,7 +334,12 @@
         </div>
         
         <div class="column-6">
-          Implementation
+          <div class="tool-editor-header">
+            <h3>Implementation</h3>
+            <div style="flex-grow: 2"></div>
+            <button class="tool-editor-closer">×</button>
+          </div>
+          
           <textarea class="function-implementation"></textarea>
           
           <div class="tool-editor-footer">

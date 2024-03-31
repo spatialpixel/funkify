@@ -118,87 +118,8 @@ class ToolEditor extends HTMLElement {
   }
   
   renderParameterForm (value, name, required) {
-    const parameterItem = document.createElement('div');
-    parameterItem.classList.add('parameter');
-    
-    const parameterHeader = document.createElement('div');
-    parameterHeader.classList.add('parameter-header');
-    parameterItem.appendChild(parameterHeader);
-    
-    // HEADER LEFT
-    const parameterHeaderLeft = document.createElement('div');
-    parameterHeader.appendChild(parameterHeaderLeft);
-    
-    const parameterNameHeader = document.createElement('h3');
-    parameterNameHeader.innerHTML = 'Name';
-    parameterHeaderLeft.appendChild(parameterNameHeader);
-    
-    const parameterNameField = document.createElement('input');
-    parameterNameField.classList.add('parameter-name');
-    parameterNameField.value = name;
-    parameterHeaderLeft.appendChild(parameterNameField);
-    
-    // HEADER RIGHT
-    const parameterHeaderRight = document.createElement('div');
-    parameterHeader.appendChild(parameterHeaderRight);
-    
-    const parameterTypeHeader = document.createElement('h3');
-    parameterTypeHeader.innerHTML = 'Type';
-    parameterHeaderRight.appendChild(parameterTypeHeader);
-    
-    const parameterTypeField = document.createElement('select');
-    parameterTypeField.classList.add('parameter-type');
-    parameterHeaderRight.appendChild(parameterTypeField);
-    
-    _.forEach(['string', 'number'], typeStr => {
-      const parameterOption = document.createElement('option');
-      parameterOption.value = typeStr;
-      parameterOption.innerHTML = typeStr;
-      parameterTypeField.appendChild(parameterOption);
-      
-      if (value.type === typeStr) {
-        parameterOption.setAttribute('selected', true);
-      }
-    });
-    
-    // HEADER BUTTONS
-    const parameterHeaderButtons = document.createElement('div');
-    parameterHeaderButtons.classList.add('parameter-header-buttons');
-    
-    const removeParameterButton = document.createElement('button');
-    removeParameterButton.classList.add('remove-parameter');
-    removeParameterButton.innerHTML = '×';
-    removeParameterButton.addEventListener('click', event => {
-      const parametersList = this.shadowRoot.querySelector('.parameters-list');
-      parametersList.removeChild(parameterItem);
-    });
-    parameterHeaderButtons.appendChild(removeParameterButton);
-    
-    const requiredLabel = document.createElement('label');
-    const requiredCheckbox = document.createElement('input');
-    requiredCheckbox.classList.add('parameter-required');
-    requiredCheckbox.type = 'checkbox';
-    if (_.includes(required, name)) {
-      requiredCheckbox.checked = true;
-    }
-    requiredLabel.appendChild(requiredCheckbox);
-    
-    const requiredLabelText = document.createTextNode(' Required');
-    requiredLabel.appendChild(requiredLabelText);
-    parameterHeaderButtons.appendChild(requiredLabel);
-    
-    parameterHeader.appendChild(parameterHeaderButtons);
-    
-    // DESCRIPTION
-    const parameterDescHeader = document.createElement('h3');
-    parameterDescHeader.innerHTML = 'Description';
-    parameterItem.appendChild(parameterDescHeader);
-    
-    const parameterDescriptionField = document.createElement('input');
-    parameterDescriptionField.classList.add('parameter-description');
-    parameterDescriptionField.value = value.description;
-    parameterItem.appendChild(parameterDescriptionField);
-    
+    const parameterItem = document.createElement('parameter-item');
+    parameterItem.populate(value, name, required);
     return parameterItem;
   }
 }

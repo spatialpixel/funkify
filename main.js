@@ -2,6 +2,7 @@ import './style.css';
 import './dropdown-menu.js';
 import './tools-list.js';
 import './tool-editor.js';
+import './parameter-item.js';
 import * as Interface from './interface.js';
 import { FunctionTool } from './function.js';
 
