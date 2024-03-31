@@ -36,19 +36,22 @@
       </header>
       
       <main>
-        <div id="chat" class="column column-8">
+        <div id="chat" class="column column-9">
+          <div id="chat-header" class="row">
+            <div class="column-6"><h3>Chat</h3></div>
+            <div class="column-6"><h3>Function Calls</h3></div>
+          </div>
           <div id="messages-list"></div>
           
           <div class="prompt">
             <div class="column-6">
               <textarea id="prompt" placeholder="Chat with OpenAI"></textarea>
             </div>
-            <div class="column-6">
-            </div>
+            <div class="column-6"></div>
           </div>
         </div>
         
-        <div id="tools" class="column column-4">
+        <div id="tools" class="column column-3">
           <tools-list></tools-list>
         </div>
         
@@ -410,7 +413,6 @@
     <template id="tools-list-template">
       <style>
         .tool-item {
-          /* font-size: 1.2rem; */
           margin-bottom: 5px;
           padding: 8px 0;
           position: relative;
@@ -437,6 +439,7 @@
           gap: 10px;
           border-bottom: 2px solid var(--border-color);
           margin-bottom: 10px;
+          height: 40px;
         }
         button {
           font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
@@ -460,18 +463,18 @@
         button.remove-tool:hover {
           background-color: darkred;
         }
+        h3 {
+          margin: 0;
+        }
       </style>
       
       <div class="tools-list">
         <div class="tools-list-header">
-          <h3>Functions + Tools</h3>
+          <h3>Function Definitions</h3>
           <div style="flex-grow:2"></div>
           <button class="new-function">New Function</button>
         </div>
-        
-        <div class="tools-list-main">
-          
-        </div>
+        <div class="tools-list-main"></div>
       </div>
     </template>
     
@@ -482,8 +485,8 @@
           --dropdown-width: 160px;
           --dropdown-button-font-size: 1rem;
           --dropdown-button-border: 2px solid black;
-          --primary-color: #eac451;
-          --primary-color-lightened: #f4e1a8;
+          --primary-color: #f70;
+          --primary-color-lightened: #f90;
           --border-color: black;
           --background-color: white;
         }

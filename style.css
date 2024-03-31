@@ -26,7 +26,7 @@ body {
   font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 }
 
-h1 {
+h1, h3 {
   margin: 0;
 }
 
@@ -70,20 +70,30 @@ main {
   gap: 10px;
   padding-top: 20px;
 }
-.column-8 {
-  width: 66.6%;
-}
-.column-6 {
-  width: 50%;
-}
-.column-4 {
-  width: 33.3%;
-}
+
+.column-10 { width: 83.33%; }
+.column-9 {  width: 75%;    }
+.column-8 {  width: 66.67%; }
+.column-6 {  width: 50%;    }
+.column-4 {  width: 33.33%; }
+.column-3 {  width: 25%;    }
+.column-2 {  width: 16.67%; }
+.column-1 {  width: 8.333%; }
+
 .left {
   width: 50%;
 }
 .right {
   width: 50%;
+}
+
+#chat-header div {
+  border-bottom: 2px solid var(--border-color);
+  margin-right: 10px;
+  height: 40px; /* Chosen to line up with the tools-list element header */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 #messages-list {
@@ -94,6 +104,7 @@ main {
   overflow-x: hidden;
   text-wrap: pretty;
   overflow-wrap: anywhere;
+  margin-right: 10px;
 }
 
 .message {
@@ -111,7 +122,7 @@ main {
 
 textarea#prompt {
   font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  width: calc(100% - 22px);
+  width: calc(100% - 30px);
   
   padding: 10px;
   font-size: 1.2rem;
@@ -119,8 +130,12 @@ textarea#prompt {
   border-radius: 4px;
   border-width: 1px;
   border: 2px solid var(--border-color);
+  outline: none;
   
   resize: none;
+}
+textarea#prompt:focus {
+  border-color: #f70;
 }
 input {
   font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
