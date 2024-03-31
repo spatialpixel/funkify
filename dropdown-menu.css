@@ -7,8 +7,6 @@
 .dropdown-wider {
   --dropdown-width: 500px;
 }
-.dropdown-big {
-  --dropdown-button-font-size: var(--nav-font-size);
-  --dropdown-button-border: none;
+.dropdown-widest {
   --dropdown-width: 640px;
 }

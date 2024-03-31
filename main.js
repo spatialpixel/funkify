@@ -1,5 +1,7 @@
 import './style.css';
 import './dropdown-menu.js';
+import './tools-list.js';
+import './tool-editor.js';
 import * as Interface from './interface.js';
 
 import OpenAI from 'openai';
@@ -25,7 +27,28 @@ function onReady () {
   ];
   
   state.tools = [
-    new WeatherTool('get_current_weather', 'Tells the current weather given a location')
+    new FunctionTool(
+      'bf194fe8-66eb-4510-9bcf-b80cb7017618',
+      'get_current_weather',
+      'Tells the current weather given a location',
+      {
+        'location': {
+          'type': 'string',
+          'description': 'The location the user is asking about.'
+        },
+        
+        'latitude': {
+          'type': 'number',
+          'description': 'The latitude of the location the user is asking about.'
+        },
+        
+        'longitude': {
+          'type': 'number',
+          'description': 'The longitude of the location the user is asking about.'
+        }
+      },
+      ['latitude', 'longitude']
+    )
   ];
   
   state.openAIApiKeyChanged = false;
@@ -39,6 +62,9 @@ function onReady () {
   Interface.initializeTextInput('#openai-api-key', apiKeyHandler, defaultApiKeyGetter);
   // initializeTextInput does not call the setter by default.
   state.apiKey = defaultApiKeyGetter();
+  
+  const toolsList = document.querySelector('tools-list');
+  toolsList.populate(state);
 }
 
 function initializeOpenAI () {
@@ -304,22 +330,19 @@ function stringify (function_result) {
   return stringified_result;
 }
 
+
 class FunctionTool {
-  constructor (name, description) {
+  constructor (id, name, description, properties, required) {
+    this.id = id;
     this.name = name;
     this.description = description;
+    
+    this.properties = properties;
+    this.required = required;
   }
   
   call (args) {
     return "success";
-  }
-  
-  get parameters () {
-    return {};
-  }
-  
-  get required () {
-    return [];
   }
   
   get schema () {
@@ -330,45 +353,11 @@ class FunctionTool {
         'description': this.description,
         'parameters': {
           'type': 'object',
-          'properties': this.parameters,
+          'properties': this.properties,
           'required': this.required,
         }
       }
     }
-  }
-}
-
-class WeatherTool extends FunctionTool {
-  async call (args) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${args.latitude}&longitude=${args.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall`;
-    
-    const result = await fetch(url);
-    const response = await result.json();
-    
-    return response;
-  }
-  
-  get parameters () {
-    return {
-      'location': {
-        'type': 'string',
-        'description': 'The location the user is asking about.'
-      },
-      
-      'latitude': {
-        'type': 'number',
-        'description': 'The latitude of the location the user is asking about.'
-      },
-      
-      'longitude': {
-        'type': 'number',
-        'description': 'The longitude of the location the user is asking about.'
-      }
-    }
-  }
-  
-  get required () {
-    return ['location', 'latitude', 'longitude'];
   }
 }
 

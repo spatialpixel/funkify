@@ -16,6 +16,7 @@
       <header>
         <h1>Spatial Pixel → Funky</h1>
         <div style="flex-grow: 2"></div>
+        
         <dropdown-menu class="dropdown-right dropdown-wide">
           <span slot="button-text">Settings</span>
           <ul>
@@ -35,17 +36,193 @@
       </header>
       
       <main>
-        <div id="messages-list"></div>
-        
-        <div class="prompt">
-          <div class="left">
-            <textarea id="prompt"></textarea>
-          </div>
-          <div class="right">
+        <div class="column column-8">
+          <div id="messages-list"></div>
+          
+          <div class="prompt">
+            <div class="column-6">
+              <textarea id="prompt"></textarea>
+            </div>
+            <div class="column-6">
+            </div>
           </div>
         </div>
+        
+        <div class="column column-4">
+          <tools-list></tools-list>
+        </div>
+        
+        <tool-editor style="display:none;"></tool-editor>
       </main>
     </div>
+    
+    <template id="tool-editor-template">
+      <style>
+        .tool-editor {
+          position: absolute;
+          width: 700px;
+          left: calc(50% - 700px / 2);
+          top: 100px;
+          bottom: 100px;
+          z-index: 100;
+          border: 2px solid var(--border-color);
+          border-radius: 3px;
+          box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+          background-color: white;
+          
+          display: flex;
+          flex-direction: column;
+        }
+        .tool-editor-header {
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          height: 50px;
+          align-items: center;
+          padding: 20px;
+        }
+        .tool-editor-main {
+          flex-grow: 2;
+          overflow-y: scroll;
+          overflow-x: hidden;
+          padding: 20px;
+        }
+        .tool-editor-footer {
+          display: flex;
+          flex-direction: row-reverse;
+          gap: 10px;
+          height: 50px;
+          align-items: center;
+          padding: 20px;
+        }
+        
+        .parameter {
+          border-top: 2px solid #222;
+          padding: 8px 0;
+        }
+        .parameter-header {
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          justify-content: space-between;
+        }
+        .parameter-header div:first-child {
+          /* flex-grow: 2; */
+        }
+        .parameter-header-buttons {
+          display: flex;
+          flex-direction: column;
+          min-width: 40px;
+          /* align-items: start; */
+        }
+        input[type=checkbox] {
+          width: 15px;
+          height: 15px;
+        }
+        button.remove-parameter {
+          color: red;
+          border: none;
+        }
+        button.remove-parameter:hover {
+          background-color: darkred;
+        }
+        
+        h2, h3 {
+          margin-bottom: 0;
+        }
+        button {
+          font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+          border: 2px solid var(--border-color);
+          border-radius: 3px;
+          color: var(--text-color);
+          background-color: var(--background-color);
+          padding: 4px 6px;
+          font-size: 1.2rem;
+        }
+        button:hover {
+          background-color: #f90;
+        }
+        button.tool-editor-closer {
+          height: 40px;
+          width: 40px;
+          font-size: 30px;
+          line-height: 40px;
+          padding: 0 0 4px 0;
+          /* vertical-align: top; */
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        input, select {
+          font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+          width: calc(100% - 22px);
+          padding: 10px;
+          margin: 5px 0 0 0;
+          border-radius: 4px;
+          border-width: 1px;
+          font-size: 1.2rem;
+        }
+        textarea {
+          font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+          width: calc(100% - 22px);
+          padding: 10px;
+          margin: 5px 0 0 0;
+          border-radius: 4px;
+          border-width: 1px;
+          font-size: 1.2rem;
+          resize: vertical;
+        }
+      </style>
+      
+      <div class="tool-editor">
+        <div class="tool-editor-header">
+          <h2>Function editor</h2>
+          <div style="flex-grow:2"></div>
+          <button class="tool-editor-closer">×</button>
+        </div>
+        
+        <div class="tool-editor-main">
+          <h2>Function Name</h2>
+          <input class="function-name-field" />
+          <h2>Function Description</h2>
+          <textarea class="function-description-field"></textarea>
+          
+          <h2>Parameters</h2>
+          <div class="parameters-list">
+          </div>
+        </div>
+        
+        <div class="tool-editor-footer">
+          <button class="tool-save">Save Function</button>
+          <div style="flex-grow: 2"></div>
+          <button class="add-parameter">Add Parameter</button>
+        </div>
+      </div>
+    </template>
+    
+    <template id="tools-list-template">
+      <style>
+        .tool-item {
+          font-size: 1.2rem;
+          margin-bottom: 5px;
+          padding: 8px 0;
+        }
+        .tool-item:hover {
+          background-color: #f70;
+          cursor: pointer;
+        }
+      </style>
+      
+      <div class="tools-list">
+        
+        <div class="tools-list-header">
+          Functions + Tools
+        </div>
+        <div class="tools-list-main">
+          
+        </div>
+      </div>
+    </template>
     
     <template id="dropdown-menu-template">
       <style>
@@ -148,7 +325,7 @@
         </button>
         
         <div class="dropdown-content">
-            <slot></slot>
+          <slot></slot>
         </div>
       </div>
     </template> <!-- end dropdown-menu-template -->
