@@ -74,10 +74,10 @@
         <div id="tools" class="column column-3">
           <tools-list></tools-list>
         </div>
-        
-        <tool-editor style="display:none;"></tool-editor>
       </main>
     </div>
+    
+    <tool-editor style="display:none;"></tool-editor>
     
     <template id="collapsible-element-template">
       <style>
@@ -267,6 +267,15 @@
     
     <template id="tool-editor-template">
       <style>
+        .tool-editor-mask {
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          z-index: 99;
+          background-color: rgba(0, 0, 0, 0.75);
+        }
         .tool-editor {
           position: absolute;
           left: 100px;
@@ -395,6 +404,7 @@
         }
       </style>
       
+      <div class="tool-editor-mask"></div>
       <div class="tool-editor">
         <div class="column-6">
           <div class="tool-editor-header">
