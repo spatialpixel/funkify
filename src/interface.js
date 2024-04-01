@@ -1,5 +1,5 @@
 /**
- * @module Funkily.Interface
+ * @module Funkify.Interface
  * @description Helper functions for interactions with HTML elements.
  * @author William Martin
  * @version 0.1.0

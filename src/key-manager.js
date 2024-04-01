@@ -28,10 +28,10 @@ export class KeyManager {
   apiKeyHandler (value, event) {
     this.state.apiKey = value;
     this.state.openAIApiKeyChanged = true;
-    localStorage.setItem('funkily-openai-api-key', this.state.apiKey);
+    localStorage.setItem('funkify-openai-api-key', this.state.apiKey);
   }
   
   defaultApiKeyGetter () {
-    return localStorage.getItem('funkily-openai-api-key');
+    return localStorage.getItem('funkify-openai-api-key');
   }
 }

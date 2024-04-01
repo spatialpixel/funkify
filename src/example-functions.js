@@ -1,5 +1,5 @@
 /**
- * @module Funkily.ExampleFunctions
+ * @module Funkify.ExampleFunctions
  * @description Some examples of FunctionTool instances.
  * @author William Martin
  * @version 0.1.0
