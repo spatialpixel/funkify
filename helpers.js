@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 // https://stackoverflow.com/questions/5767325/how-can-i-remove-a-specific-item-from-an-array-in-javascript
 export function removeItemOnce(arr, value) {
   var index = arr.indexOf(value);
@@ -80,4 +82,28 @@ export function screenToWorld (p, x, y) {
 
   // Return the 3D coordinates.
   return p.createVector(worldCoordinates[0], worldCoordinates[1], worldCoordinates[2]);
+}
+
+export function prettyString (function_result) {
+  let stringified_result
+  if (_.isObject(function_result)) {
+    stringified_result = JSON.stringify(function_result, null, 2);
+  } else if (_.isString(function_result)) {
+    stringified_result = function_result;
+  } else {
+    stringified_result = _.toString(function_result);
+  }
+  return stringified_result;
+}
+
+export function stringify (function_result) {
+  let stringified_result
+  if (_.isObject(function_result)) {
+    stringified_result = JSON.stringify(function_result);
+  } else if (_.isString(function_result)) {
+    stringified_result = function_result;
+  } else {
+    stringified_result = _.toString(function_result);
+  }
+  return stringified_result;
 }
