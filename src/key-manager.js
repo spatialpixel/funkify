@@ -4,10 +4,14 @@ export class KeyManager {
   constructor (state) {
     this.state = state;
     
-    Interface.initializeTextInput('#openai-api-key', this.apiKeyHandler, this.defaultApiKeyGetter);
+    Interface.initializeTextInput(
+      '#openai-api-key',
+      this.apiKeyHandler.bind(this),
+      this.defaultApiKeyGetter.bind(this)
+    );
     // Note that initializeTextInput does not call the setter by default.
     
-    state.apiKey = this.defaultApiKeyGetter();
+    this.state.apiKey = this.defaultApiKeyGetter();
     this.addToggleVisibilityButton();
   }
   
