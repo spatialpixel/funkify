@@ -21,9 +21,12 @@ const leftArrow = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" 
   <line x1="0" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"></line>
 </svg>`
 
+
 export default class MessagesManager {
   constructor (state) {
     this.state = state;
+    
+    this.state.followStreaming = true;
     
     this.messagesList = document.querySelector("#messages-list");
   }
@@ -61,7 +64,13 @@ export default class MessagesManager {
     
     this.messagesList.appendChild(messageDiv);
     
+    this.follow();
+    
     return messageDiv;
+  }
+  
+  tagAsUserMessage (messageDiv) {
+    messageDiv.classList.add('user');
   }
   
   updateMessageInList (id, content) {
@@ -73,11 +82,14 @@ export default class MessagesManager {
     const leftDiv = messageDiv.querySelector(`.left`);
     leftDiv.innerHTML = marked.parse(content);
     
+    this.follow();
+    
     return messageDiv;
   }
   
   addArrowToMessage (messageElement, direction) {
     const right = messageElement.querySelector('.right');
+    
     if (direction === "right") {
       right.classList.add('column-reverse');
       right.innerHTML = rightArrow;
@@ -86,7 +98,9 @@ export default class MessagesManager {
     }
   }
   
-  scrollToBottomOfList () {
-    scrollableElement.scrollTop = scrollableElement.scrollHeight;
+  follow () {
+    if (this.state.followStreaming) {
+      this.messagesList.scrollTop = this.messagesList.scrollHeight;
+    }
   }
 }

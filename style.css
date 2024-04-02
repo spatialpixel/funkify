@@ -6,6 +6,7 @@
   --text-color: #222;
   --border-color: #222;
   --primary-color: #f70;
+  --secondary-color: #f90;
 }
 
 html {
@@ -74,6 +75,7 @@ main {
   flex-direction: row;
   gap: 10px;
   padding-top: 20px;
+  padding-bottom: 10px;
 }
 
 .column-10 { width: 83.33%; }
@@ -127,7 +129,14 @@ textarea#system-context {
   gap: 10px;
 }
 .message>.left {
-  padding-left: 11px;
+  padding-left: 15px;
+  position: relative;
+}
+.message.user>.left::before {
+  content: "▶︎";
+  position: absolute;
+  left: 0;
+  top: 15px; /* Position the pseudo-element vertically centered */
 }
 .message>.right>p {
   margin: 0;
@@ -147,10 +156,22 @@ textarea#prompt {
   border: 2px solid var(--border-color);
   outline: none;
   resize: none;
+  padding-left: 13px;
 }
 textarea#prompt:focus {
   border-color: var(--primary-color);
 }
+#prompt-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+#prompt-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 input {
   font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   width: calc(100% - 22px);
@@ -168,6 +189,16 @@ button {
   background-color: var(--background-color);
   padding: 4px 6px;
 }
+button.toggled {
+  background-color: var(--secondary-color);
+}
+button:hover {
+  background-color: var(--primary-color);
+}
+button:active {
+  background-color: var(--secondary-color);
+}
+
 select {
   font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   padding: 3px 6px;

@@ -11,9 +11,13 @@ export class ChatManager {
     this.state.openAIApiKeyChanged = false;
     this.state.openai = null;
     this.state.messages = [];
-    this.state.followStreaming = false;
     
     this.systemContextInput = document.querySelector('textarea#system-context');
+    this.modelPicker = document.querySelector('select#model-picker');
+  }
+  
+  get currentModel () {
+    return this.modelPicker.value;
   }
   
   initializeOpenAI () {
@@ -43,17 +47,15 @@ export class ChatManager {
     if (userMessage) {
       this.state.messages.push(userMessage);
       this.state.lastUserMessageElement = this.state.messagesManager.addMessageToList(userMessage);
+      this.state.messagesManager.tagAsUserMessage(this.state.lastUserMessageElement);
     }
     
-    const modelPicker = document.querySelector('select#model-picker');
-    const currentModel = modelPicker.value;
-    
-    console.log("Model: ", currentModel);
+    console.log("Model: ", this.currentModel);
     
     const tools = _.map(this.state.tools, 'schema');
     
     const completion = await this.state.openai.chat.completions.create({
-      model: currentModel,
+      model: this.currentModel,
       messages: this.state.messages,
       tools,
       stream: true,
@@ -159,7 +161,6 @@ export class ChatManager {
           "name": function_name,
           "content": Helpers.stringify(function_result),
         };
-        
         this.state.messages.push(functionResponseMessage);
       }
       

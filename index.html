@@ -87,11 +87,16 @@
               <h3>Function Calls</h3>
             </div>
           </div>
+          
           <div id="messages-list"></div>
           
           <div class="prompt">
-            <div class="column-6">
+            <div class="column-6" id="prompt-container">
               <textarea id="prompt" placeholder="Chat with OpenAI (Cmd+Enter or Ctrl+Enter to Send)"></textarea>
+              <div id="prompt-buttons">
+                <button id="follow-streaming" class="toggled" title="Toggle following">⤓</button>
+                <button id="submit" title="Submit">▶︎</button>
+              </div>
             </div>
             <div class="column-6"></div>
           </div>
@@ -215,14 +220,18 @@
           padding: 10px 0;
         }
         button.remove-parameter {
-          color: red;
+          color: var(--primary-color);
           border: none;
           width: 30px;
           font-size: 30px;
           line-height: 30px;
         }
         button.remove-parameter:hover {
-          background-color: darkred;
+          background-color: var(--secondary-color);
+        }
+        button.remove-parameter:hover {
+          color: white;
+          background-color: var(--primary-color);
         }
         
         button {
@@ -360,6 +369,7 @@
           padding-left: 0;
           padding-right: 0;
           border: none;
+          min-height: 150px;
         }
         .function-implementation {
           resize: none;
@@ -491,8 +501,11 @@
           
         }
         .tool-left:hover {
-          background-color: var(--primary-color);
+          background-color: var(--secondary-color);
           cursor: pointer;
+        }
+        .tool-left:active {
+          background-color: var(--primary-color);
         }
         .tools-list-header {
           display: flex;
@@ -516,14 +529,18 @@
           background-color: var(--primary-color);
         }
         button.remove-tool {
-          color: red;
+          color: var(--primary-color);
           border: none;
           width: 30px;
           font-size: 30px;
           line-height: 30px;
         }
         button.remove-tool:hover {
-          background-color: darkred;
+          background-color: var(--secondary-color);
+        }
+        button.remove-tool:active {
+          color: white;
+          background-color: var(--primary-color);
         }
         h3 {
           margin: 0;

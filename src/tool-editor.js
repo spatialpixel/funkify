@@ -118,6 +118,9 @@ class ToolEditor extends HTMLElement {
     const functionNameField = this.shadowRoot.querySelector('.function-name-field');
     functionNameField.value = tool.name;
     
+    const functionDescriptionField = this.shadowRoot.querySelector('.function-description-field');
+    functionDescriptionField.value = tool.description;
+    
     const parametersList = this.shadowRoot.querySelector('.parameters-list');
     _.forEach(tool.properties, (value, name) => {
       const param = this.renderParameterForm(value, name, tool.required);
