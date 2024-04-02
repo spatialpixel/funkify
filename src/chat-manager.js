@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import _ from 'lodash';
 
 import * as Helpers from './helpers.js';
-import { addMessageToList, updateMessageInList, addArrowToMessage } from './messages.js';
+
 
 export class ChatManager {
   constructor (state) {
@@ -11,6 +11,9 @@ export class ChatManager {
     this.state.openAIApiKeyChanged = false;
     this.state.openai = null;
     this.state.messages = [];
+    this.state.followStreaming = false;
+    
+    this.systemContextInput = document.querySelector('textarea#system-context');
   }
   
   initializeOpenAI () {
@@ -27,21 +30,19 @@ export class ChatManager {
     }
     
     if (_.isEmpty(this.state.messages)) {
-      const systemContextInput = document.querySelector('textarea#system-context');
-      
-      console.log("System context: ", systemContextInput.value);
+      console.log("System context: ", this.systemContextInput.value);
       
       this.state.messages.push({
         role: 'system',
-        content: systemContextInput.value
+        content: this.systemContextInput.value
       });
       
-      systemContextInput.setAttribute('disabled', true);
+      this.systemContextInput.setAttribute('disabled', true);
     }
     
     if (userMessage) {
       this.state.messages.push(userMessage);
-      this.state.lastUserMessageElement = addMessageToList(userMessage);
+      this.state.lastUserMessageElement = this.state.messagesManager.addMessageToList(userMessage);
     }
     
     const modelPicker = document.querySelector('select#model-picker');
@@ -105,12 +106,12 @@ export class ChatManager {
       } else {
         if (delta.content) {
           content += delta.content;
-          const messageElt = updateMessageInList(chunk.id, content);
+          const messageElt = this.state.messagesManager.updateMessageInList(chunk.id, content);
           
           if (firstLoop) {
             const lastMessage = _.last(this.state.messages);
             if (lastMessage.role === "tool") {
-              addArrowToMessage(messageElt, 'left');
+              this.state.messagesManager.addArrowToMessage(messageElt, 'left');
             }
             firstLoop = false;
           }
@@ -128,7 +129,7 @@ export class ChatManager {
       this.state.messages.push(toolCallsMessage);
       
       if (this.state.lastUserMessageElement) {
-        addArrowToMessage(this.state.lastUserMessageElement, 'right');
+        this.state.messagesManager.addArrowToMessage(this.state.lastUserMessageElement, 'right');
         this.state.lastUserMessageElement = null;
       }
       
@@ -140,7 +141,7 @@ export class ChatManager {
           id: tool_call.id,
           content: `**ƒ ${function_name}** → ${tool_call.function.arguments}`
         };
-        addMessageToList(null, pseudoMessage1);
+        this.state.messagesManager.addMessageToList(null, pseudoMessage1);
         
         const function_to_call = _.find(this.state.tools, t => t.name === function_name);
         
@@ -150,7 +151,7 @@ export class ChatManager {
           id: tool_call.id + "-response",
           content: Helpers.prettyString(function_result)
         };
-        addMessageToList(null, pseudoMessage2, true);
+        this.state.messagesManager.addMessageToList(null, pseudoMessage2, true);
         
         const functionResponseMessage = {
           "tool_call_id": tool_call.id,

@@ -10,6 +10,7 @@ import { State } from './src/state.js';
 import { ChatManager } from './src/chat-manager.js';
 import { KeyManager } from './src/key-manager.js';
 import { PromptManager } from './src/prompt-manager.js';
+import MessagesManager from './src/messages-manager.js';
 import examples from './src/example-functions.js';
 
 if (document.readyState === 'complete') {
@@ -24,6 +25,7 @@ function onReady () {
   state.chatManager = new ChatManager(state);
   state.keyManager = new KeyManager(state);
   state.promptManager = new PromptManager(state);
+  state.messagesManager = new MessagesManager(state);
   
   state.tools = examples;
   const toolsList = document.querySelector('tools-list');
