@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import _ from 'lodash';
 
 import * as Helpers from './helpers.js';
-import { addMessageToList, updateMessageInList } from './messages.js';
+import { addMessageToList, updateMessageInList, addArrowToMessage } from './messages.js';
 
 export class ChatManager {
   constructor (state) {
@@ -41,7 +41,7 @@ export class ChatManager {
     
     if (userMessage) {
       this.state.messages.push(userMessage);
-      addMessageToList(userMessage);
+      this.state.lastUserMessageElement = addMessageToList(userMessage);
     }
     
     const modelPicker = document.querySelector('select#model-picker');
@@ -61,6 +61,7 @@ export class ChatManager {
     let content = '';
     let tool_calls = [];
     let id = null;
+    let firstLoop = true;
     
     for await (const chunk of completion) {
       if (!id) { id = chunk.id; }
@@ -104,7 +105,15 @@ export class ChatManager {
       } else {
         if (delta.content) {
           content += delta.content;
-          updateMessageInList(chunk.id, content);
+          const messageElt = updateMessageInList(chunk.id, content);
+          
+          if (firstLoop) {
+            const lastMessage = _.last(this.state.messages);
+            if (lastMessage.role === "tool") {
+              addArrowToMessage(messageElt, 'left');
+            }
+            firstLoop = false;
+          }
         }
       }
     }
@@ -117,6 +126,11 @@ export class ChatManager {
       };
       
       this.state.messages.push(toolCallsMessage);
+      
+      if (this.state.lastUserMessageElement) {
+        addArrowToMessage(this.state.lastUserMessageElement, 'right');
+        this.state.lastUserMessageElement = null;
+      }
       
       for await (const tool_call of tool_calls) {
         const function_name = tool_call.function.name;
