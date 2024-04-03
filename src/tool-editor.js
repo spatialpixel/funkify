@@ -113,39 +113,52 @@ class ToolEditor extends HTMLElement {
     // Remove the reference to the last tool.
     this.tool = null;
   }
-
-  editTool (tool, state) {
-    this.tool = tool;
-    
+  
+  show () {
     const toolEditorElt = this.shadowRoot.host;
     toolEditorElt.style.display = 'block';
+  }
+
+  editTool (tool, isNewFunction = false) {
+    this.tool = tool;
+    
+    this.show();
     
     const functionNameField = this.shadowRoot.querySelector('.function-name-field');
-    functionNameField.value = tool.name;
+    functionNameField.value = this.tool.name;
     
     const functionDescriptionField = this.shadowRoot.querySelector('.function-description-field');
-    functionDescriptionField.value = tool.description;
+    functionDescriptionField.value = this.tool.description;
     
     const parametersList = this.shadowRoot.querySelector('.parameters-list');
     _.forEach(tool.properties, (value, name) => {
-      const param = this.renderParameterForm(value, name, tool.required);
+      const param = this.renderParameterForm(value, name, this.tool.required);
       parametersList.appendChild(param);
     });
     
     this.populateEditor();
+    
+    if (isNewFunction) {
+      this.focusFunctionNameField();
+    }
+  }
+  
+  focusFunctionNameField () {
+    const functionNameField = this.shadowRoot.querySelector('.function-name-field');
+    functionNameField.focus();
   }
   
   populateEditor () {
     if (!this.tool) { return; }
     
     if (!this.editorView) {
-      this.createEditor();
+      this.createEditor(this.tool.f);
     }
     
     this.setEditorContents(this.tool.f);
   }
   
-  createEditor () {
+  createEditor (text = "") {
     this.editorContainer = this.shadowRoot.querySelector('#function-implementation');
     
     this.editorTheme = EditorView.baseTheme({
@@ -158,7 +171,7 @@ class ToolEditor extends HTMLElement {
     });
     
     this.editorView = new EditorView({
-      doc: "",
+      doc: text,
       extensions: [
         basicSetup,
         this.editorTheme,

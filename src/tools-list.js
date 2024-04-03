@@ -88,7 +88,7 @@ class ToolsList extends HTMLElement {
     
     this.clearNotice();
     
-    this.state.toolEditor.editTool(newFunction);
+    this.state.toolEditor.editTool(newFunction, true);
   }
   
   addToolItem (tool) {

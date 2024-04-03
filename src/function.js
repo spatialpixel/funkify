@@ -14,7 +14,7 @@ export default class FunctionTool {
   }
   
   async call (args) {
-    const body = `return async () => { ${this.f} }`
+    const body = `return async () => { let params = args; let parameters = args; ${this.f} }`
     
     let result
     try {
@@ -75,8 +75,9 @@ FunctionTool.parse = (data, key) => {
     const description = data.schema.function.description;
     const properties = data.schema.function.parameters.properties;
     const required = data.schema.function.parameters.required;
-    const tr = new FunctionTool(id, name, description, properties, required, data.implememtation);
-    return tr;
+    const f = data.implementation;
+    
+    return new FunctionTool(id, name, description, properties, required, f);
   } catch (err) {
     console.error(`Error while parsing function:`, err)
     return null;
