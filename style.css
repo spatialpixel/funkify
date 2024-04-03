@@ -7,6 +7,17 @@
   --border-color: #222;
   --primary-color: #f70;
   --secondary-color: #f90;
+  --stroke-color: #222;
+}
+/* Colors for dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: #ddd;
+    --text-links: #444;
+    --background-color: #222;
+    --border-color: #ddd;
+    --stroke-color: #ddd;
+  }
 }
 
 html {
@@ -26,6 +37,7 @@ body {
   flex-direction: column;
   
   font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  color: var(--text-color);
 }
 
 h1, h3 {
@@ -154,6 +166,8 @@ textarea {
 textarea#prompt {
   width: calc(100% - 30px);
   border: 2px solid var(--border-color);
+  background-color: var(--background-color);
+  color: var(--text-color);
   outline: none;
   resize: none;
   padding-left: 13px;
@@ -204,7 +218,9 @@ select {
   padding: 3px 6px;
   border-radius: 3px;
   border: 2px solid var(--border-color);
+  background-color: var(--background-color);
   outline: none;
+  color: var(--text-color);
 }
 select:hover {
   background-color: var(--primary-color);
@@ -232,6 +248,10 @@ select:hover {
 }
 #toggle-openai-key-visibility:active {
   border-color: var(--border-color);
+}
+
+svg line {
+  stroke: var(--stroke-color);
 }
 
 /* From https://github.com/vineethtrv/css-loader */
