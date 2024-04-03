@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 export class PromptManager {
   constructor (state) {
     this.state = state;
@@ -22,9 +24,9 @@ export class PromptManager {
   
   async keydownHandler (event) {
     if (event.key === "Enter") {
-      const modified = event.metaKey || event.ctrlKey;
+      const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
       
-      if (modified) {
+      if (!modified) {
         event.preventDefault();
         this.submit();
       }
@@ -33,6 +35,7 @@ export class PromptManager {
   
   async submit (event) {
     const content = this.promptArea.value;
+    if (_.isEmpty(content)) { return; }
     
     console.log("User prompt to submit: ", content);
     
