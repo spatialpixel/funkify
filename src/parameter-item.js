@@ -24,14 +24,20 @@ class ParameterItem extends HTMLElement {
     const parameterNameField = this.shadowRoot.querySelector('.parameter-name');
     parameterNameField.value = name;
     
-    const parameterTypeField = this.shadowRoot.querySelector('.parameter-type');
-    parameterTypeField.value = value.type;
-    
     const parameterDescField = this.shadowRoot.querySelector('.parameter-description');
     parameterDescField.value = value.description;
     
     const parameterReqField = this.shadowRoot.querySelector('.parameter-required');
     parameterReqField.checked = _.includes(required, name);
+    
+    const parameterTypeField = this.shadowRoot.querySelector('.parameter-type');
+    if (value.type === "array" && value.items.type === "number") {
+      parameterTypeField.value = "array-number";
+    } else if (value.type === "array" && value.items.type === "string") {
+      parameterTypeField.value = "array-string";
+    } else {
+      parameterTypeField.value = value.type;
+    }
   }
 }
 

@@ -62,6 +62,15 @@ class ToolEditor extends HTMLElement {
         description: parameterDesc,
         type: parameterType,
       };
+      // Parse array types.
+      if (parameterType === "array-number") {
+        properties[parameterName].type = "array";
+        properties[parameterName].items = { type: "number" };
+      }
+      if (parameterType === "array-string") {
+        properties[parameterName].type = "array";
+        properties[parameterName].items = { type: "string" };
+      }
       
       const parameterReqElt = parameter.shadowRoot.querySelector('.parameter-required');
       const parameterReq = parameterReqElt.value;
