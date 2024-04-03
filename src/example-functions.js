@@ -41,10 +41,9 @@ const get_current_weather = () => (new FunctionTool(
 
 const search_academic_commons_code = `const objectToQueryString = obj => Object.keys(obj).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(obj[key])).join('&');
 
-const params = {
+const urlParams = objectToQueryString({
   q: args.keyword
-};
-const urlParams = objectToQueryString(params);
+});
   
 const headers = {
   'Content-Type': 'application/json',
