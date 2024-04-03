@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { FunctionTool } from './function.js';
 
 class ParameterItem extends HTMLElement {
   constructor() {

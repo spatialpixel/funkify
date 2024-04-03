@@ -3,6 +3,7 @@ import './style.css';
 import './src/dropdown-menu.js';
 import './src/tools-list.js';
 import './src/tool-editor.js';
+import './src/tool-item.js';
 import './src/parameter-item.js';
 import './src/collapsible-element.js';
 
@@ -27,12 +28,11 @@ function onReady () {
   state.promptManager = new PromptManager(state);
   state.messagesManager = new MessagesManager(state);
   
-  state.tools = examples;
-  const toolsList = document.querySelector('tools-list');
-  toolsList.populate(state);
+  state.toolEditor = document.querySelector('tool-editor');
+  state.toolEditor.initialize(state);
   
-  const modelPicker = document.querySelector('select#model-picker');
-  modelPicker.value = "gpt-4-turbo-preview";
+  state.toolsList = document.querySelector('tools-list');
+  state.toolsList.populate(state);
   
   state.promptManager.focusPrompt();
 }

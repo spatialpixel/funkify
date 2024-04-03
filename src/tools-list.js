@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { v4 as uuidv4 } from 'uuid';
-import { FunctionTool } from './function.js';
+import FunctionTool from './function.js';
+import examples from './example-functions.js';
 
 class ToolsList extends HTMLElement {
   constructor() {
@@ -15,6 +15,10 @@ class ToolsList extends HTMLElement {
     this.shadowRoot.appendChild(templateContent.cloneNode(true));
   }
   
+  connectedCallback () {
+    this.toolsListElement = this.shadowRoot.querySelector('.tools-list-main');
+  }
+  
   get tools () {
     return this.state?.tools;
   }
@@ -22,93 +26,91 @@ class ToolsList extends HTMLElement {
   populate (state) {
     this.state = state;
     
-    const newFunctionButton = this.shadowRoot.querySelector('button.new-function');
-    newFunctionButton.addEventListener('click', event => {
-      const name = 'new_function';
-      const description = "A stub function that returns dummy data."
-      const id = 'tool-' + uuidv4();
-      const parameters = {};
-      const required = [];
-      const f = `return "Success";`;
-      
-      const newFunction = new FunctionTool(id, name, description, parameters, required, f);
-      state.tools.push(newFunction);
-      
-      const toolsList = document.querySelector('tools-list');
-      toolsList.refresh();
-      
-      this.editTool(newFunction);
-    });
+    this.loadToolsFromLocalStorage();
     
-    const toolsListElement = this.shadowRoot.querySelector('.tools-list-main');
+    const populateExampleFunctions = document.querySelector("#populate-example-functions");
+    populateExampleFunctions.addEventListener('click', this.populateExampleFunctions.bind(this));
     
-    for (const tool of this.tools) {
-      const toolItem = this.addToolItem(tool);
-      toolsListElement.appendChild(toolItem);
+    const createFunctionButton = this.shadowRoot.querySelector('button.new-function');
+    createFunctionButton.addEventListener('click', this.createFunction.bind(this));
+    
+    this.tools.map(this.addToolItem.bind(this));
+  }
+  
+  loadToolsFromLocalStorage () {
+    this.state.tools = FunctionTool.loadAllFromLocalStorage();
+    
+    if (_.isEmpty(this.state.tools)) {
+      this.showExamplesNotice();
     }
+  }
+  
+  showExamplesNotice () {
+    this.examplesNotice = document.createElement('p');
+    this.examplesNotice.classList.add('notice');
+    this.examplesNotice.innerHTML = `No functions yet.
+      You can add some examples under Settings → Populate with example functions.
+      Create a new function by clicking ƒ above.`;
+    this.toolsListElement.appendChild(this.examplesNotice);
+  }
+  
+  save () {
+    for (const tool of this.state.tools) {
+      tool.save();
+    }
+  }
+  
+  clearNotice () {
+    if (this.examplesNotice) {
+      this.examplesNotice.remove();
+      this.examplesNotice = null;
+    }
+  }
+  
+  populateExampleFunctions (event) {
+    this.clearNotice();
+    
+    const newExamples = examples();
+    for (const example of newExamples) {
+      this.state.tools = _.concat(this.state.tools, newExamples);
+    }
+    
+    this.refresh();
+    this.save();
+  }
+  
+  createFunction (event) {
+    const newFunction = FunctionTool.factory();
+    this.state.tools.push(newFunction);
+    
+    this.addToolItem(newFunction);
+    newFunction.save();
+    
+    this.clearNotice();
+    
+    this.state.toolEditor.editTool(newFunction);
   }
   
   addToolItem (tool) {
-    const toolItem = document.createElement('div');
-    toolItem.classList.add('tool-item');
-    toolItem.setAttribute('id', tool.id);
-    
-    const toolItemLeft = document.createElement('div');
-    toolItemLeft.classList.add('tool-left');
-    toolItem.appendChild(toolItemLeft);
-    
-    const toolItemName = document.createElement('div');
-    toolItemName.classList.add('name');
-    toolItemName.innerHTML = tool.name;
-    toolItemLeft.appendChild(toolItemName);
-    
-    const toolItemDescription = document.createElement('div');
-    toolItemDescription.classList.add('description');
-    toolItemDescription.innerHTML = tool.description;
-    toolItemLeft.appendChild(toolItemDescription);
-    
-    toolItemLeft.addEventListener('click', event => {
-      this.editTool(tool, this.state);
-    });
-    
-    const toolItemRight = document.createElement('div');
-    toolItemRight.classList.add('tool-right');
-    toolItem.appendChild(toolItemRight);
-    
-    const toolRemoveButton = document.createElement('button');
-    toolRemoveButton.classList.add('remove-tool');
-    toolRemoveButton.innerHTML = '×';
-    toolRemoveButton.addEventListener('click', event => {
-      event.stopPropagation();
-      // Remove from the state.
-      _.remove(this.state.tools, t => t.name === tool.name);
-      toolItem.remove();
-    });
-    toolItemRight.appendChild(toolRemoveButton);
-    
+    const toolItem = document.createElement('tool-item');
+    this.toolsListElement.appendChild(toolItem);
+    toolItem.initialize(tool, this);
     return toolItem;
   }
   
+  // Refresh to sync up state.tools with the list of tool-items.
+  // TODO Remove any tool-items not found in state.tools.
   refresh () {
     for (const tool of this.tools) {
-      let toolElt = this.shadowRoot.querySelector(`#${tool.id}`);
-      if (!toolElt) {
-        const toolsListElement = this.shadowRoot.querySelector('.tools-list-main');
-        toolElt = this.addToolItem(tool);
-        toolsListElement.appendChild(toolElt);
+      let toolItem = this.shadowRoot.querySelector(`#${tool.id}`);
+      
+      if (!toolItem) {
+        // No item found with that ID, so create a new one.
+        toolItem = this.addToolItem(tool);
       }
       
-      const toolItemName = toolElt.querySelector(`.name`);
-      toolItemName.innerHTML = tool.name;
-      
-      const toolItemDescription = toolElt.querySelector(`.description`);
-      toolItemDescription.innerHTML = tool.description;
+      toolItem.refresh();
     }
-  }
-  
-  editTool (tool) {
-    const toolEditorElt = document.querySelector('tool-editor');
-    toolEditorElt.editTool(tool);
   }
 }
 

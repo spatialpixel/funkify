@@ -14,6 +14,7 @@ export class ChatManager {
     
     this.systemContextInput = document.querySelector('textarea#system-context');
     this.modelPicker = document.querySelector('select#model-picker');
+    this.modelPicker.value = "gpt-4-turbo-preview";
   }
   
   get currentModel () {

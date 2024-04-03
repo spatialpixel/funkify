@@ -30,6 +30,10 @@ class ToolEditor extends HTMLElement {
     addParameterButton.addEventListener('click', this.addParameter.bind(this));
   }
   
+  initialize (state) {
+    this.state = state;
+  }
+  
   save (event) {
     const functionNameField = this.shadowRoot.querySelector('.function-name-field');
     this.tool.name = functionNameField.value;
@@ -72,6 +76,7 @@ class ToolEditor extends HTMLElement {
     const toolsList = document.querySelector('tools-list');
     toolsList.refresh();
     
+    this.state.toolsList.save();
     this.close();
   }
   
@@ -190,5 +195,4 @@ class ToolEditor extends HTMLElement {
   }
 }
 
-// Define the custom element
 customElements.define('tool-editor', ToolEditor);

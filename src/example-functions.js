@@ -5,7 +5,8 @@
  * @version 0.1.0
  */
 
-import { FunctionTool } from './function.js';
+import FunctionTool from './function.js';
+import { v4 as uuidv4 } from 'uuid';
 
 const get_current_weather_code = `const url = \`https://api.open-meteo.com/v1/forecast?latitude=\${args.latitude}&longitude=\${args.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall\`;
 
@@ -14,8 +15,8 @@ const response = await result.json();
 
 return response;`
   
-const get_current_weather = new FunctionTool(
-  'tool-bf194fe8-66eb-4510-9bcf-b80cb7017618',
+const get_current_weather = () => (new FunctionTool(
+  `funkify-tool-${uuidv4()}`,
   'get_current_weather',
   'Tells the current weather given a location',
   {
@@ -36,7 +37,7 @@ const get_current_weather = new FunctionTool(
   },
   ['latitude', 'longitude'],
   get_current_weather_code
-);
+));
 
 const search_academic_commons_code = `const objectToQueryString = obj => Object.keys(obj).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(obj[key])).join('&');
 
@@ -54,8 +55,8 @@ const url = \`https://academiccommons.columbia.edu/api/v1/search?search_type=key
 const response = await fetch(url);
 return await response.json();`
 
-const search_academic_commons = new FunctionTool(
-  'tool-3c328d85-bb22-45cd-8299-88d394923f8b',
+const search_academic_commons = () => (new FunctionTool(
+  `funkify-tool-${uuidv4()}`,
   'search_academic_commons',
   "Searches Columbia University's Academic Commons database for a given topic keyword and returns ten relevant results.",
   {
@@ -66,9 +67,9 @@ const search_academic_commons = new FunctionTool(
   },
   ['keyword'],
   search_academic_commons_code
-);
+));
 
-export default [
-  get_current_weather,
-  search_academic_commons
-]
+export default () => ([
+  get_current_weather(),
+  search_academic_commons()
+]);

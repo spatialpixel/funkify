@@ -37,6 +37,10 @@
                 script or browser extension could still access it. Ensure your account
                 has strict limits on API spend and change this API key often.</p>
             </li>
+            
+            <li>
+              <button id="populate-example-functions">Populate with example functions</button>
+            </li>
           </ul>
         </dropdown-menu>
         
@@ -109,6 +113,77 @@
     </div>
     
     <tool-editor style="display:none;"></tool-editor>
+    
+    <template id="tool-item-template">
+      <style>
+        .tool-item {
+          margin-bottom: 5px;
+          padding: 8px 0;
+          position: relative;
+          display: flex;
+          flex-direction: row;
+        }
+        .name {
+          font-weight: bold;
+        }
+        .tool-left {
+          flex-grow: 2;
+        }
+        .tool-left:hover {
+          background-color: var(--secondary-color);
+          cursor: pointer;
+        }
+        .tool-left:active {
+          background-color: var(--primary-color);
+        }
+        .tool-right {
+          /* Contains the remove button. */
+        }
+        
+        button {
+          font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+          border: 2px solid var(--border-color);
+          border-radius: 3px;
+          color: var(--text-color);
+          background-color: var(--background-color);
+          padding: 4px 6px;
+          font-size: 1.0rem;
+        }
+        button:hover {
+          background-color: var(--primary-color);
+        }
+        button:active {
+          background-color: var(--secondary-color);
+        }
+        
+        button.remove-tool {
+          color: var(--primary-color);
+          border: none;
+          width: 30px;
+          font-size: 30px;
+          line-height: 30px;
+          padding-top: 0px;
+        }
+        button.remove-tool:hover {
+          background-color: var(--secondary-color);
+        }
+        button.remove-tool:active {
+          color: white;
+          background-color: var(--primary-color);
+        }
+      </style>
+      
+      <div class="tool-item">
+        <div class="tool-left">
+          <div class="name"></div>
+          <div class="description"></div>
+        </div>
+        
+        <div class="tool-right">
+          <button class="delete-tool">×</button>
+        </div>
+      </div>
+    </template>
     
     <template id="collapsible-element-template">
       <style>
@@ -212,7 +287,8 @@
           border: none;
           border-bottom: 2px solid var(--border-color);
           border-radius: 0;
-          padding: 10px 0;
+          padding: 8px 0;
+          margin-top: 3px;
         }
         textarea.parameter-description {
           border-radius: 0;
@@ -225,6 +301,7 @@
           width: 30px;
           font-size: 30px;
           line-height: 30px;
+          padding-top: 0px;
         }
         button.remove-parameter:hover {
           background-color: var(--secondary-color);
@@ -371,16 +448,11 @@
           border: none;
           min-height: 150px;
         }
-        .function-implementation {
-          resize: none;
-          width: calc(100% - 24px);
-          flex-grow: 2;
-          border: 2px solid var(--border-color);
-        }
         #function-implementation {
           flex-grow: 2;
-          width: calc(100% - 24px);
+          width: calc(100% - 4px);
           border: 2px solid var(--border-color);
+          border-radius: 3px;
         }
         
         h2, h3 {
@@ -472,7 +544,6 @@
           </div>
           
           <div id="function-implementation"></div>
-          <!-- <textarea class="function-implementation"></textarea> -->
           
           <div class="tool-editor-footer">
             <button class="tool-save">Save Function</button>
@@ -484,29 +555,6 @@
     
     <template id="tools-list-template">
       <style>
-        .tool-item {
-          margin-bottom: 5px;
-          padding: 8px 0;
-          position: relative;
-          display: flex;
-          flex-direction: row;
-        }
-        .name {
-          font-weight: bold;
-        }
-        .tool-left {
-          flex-grow: 2;
-        }
-        .tool-right {
-          
-        }
-        .tool-left:hover {
-          background-color: var(--secondary-color);
-          cursor: pointer;
-        }
-        .tool-left:active {
-          background-color: var(--primary-color);
-        }
         .tools-list-header {
           display: flex;
           flex-direction: row;
@@ -528,19 +576,15 @@
         button:hover {
           background-color: var(--primary-color);
         }
-        button.remove-tool {
-          color: var(--primary-color);
-          border: none;
-          width: 30px;
-          font-size: 30px;
-          line-height: 30px;
-        }
-        button.remove-tool:hover {
+        button:active {
           background-color: var(--secondary-color);
         }
-        button.remove-tool:active {
-          color: white;
-          background-color: var(--primary-color);
+        button.new-function {
+          min-width: 30px;
+          line-height: 0px;
+          height: 32px;
+          font-size: 1.6rem;
+          padding-top: 2px;
         }
         h3 {
           margin: 0;
@@ -551,7 +595,7 @@
         <div class="tools-list-header">
           <h3>Function Definitions</h3>
           <div style="flex-grow:2"></div>
-          <button class="new-function">New Function</button>
+          <button class="new-function" title="Add new function">ƒ</button>
         </div>
         <div class="tools-list-main"></div>
       </div>
