@@ -61,12 +61,16 @@ export class ChatManager {
     
     let completion
     try {
-      completion = await this.state.openai.chat.completions.create({
+      const params = {
         model: this.currentModel,
         messages: this.state.messages,
-        tools,
         stream: true,
-      });
+      };
+      if (!_.isEmpty(tools)) {
+        params.tools = tools;
+      }
+      
+      completion = await this.state.openai.chat.completions.create(params);
     } catch (err) {
       console.error("There was an error chatting with OpenAI:", err);
       
