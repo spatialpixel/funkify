@@ -54,18 +54,31 @@ export class ChatManager {
     console.log("Model: ", this.currentModel);
     
     const tools = _.map(this.state.tools, 'schema');
-    
-    const completion = await this.state.openai.chat.completions.create({
-      model: this.currentModel,
-      messages: this.state.messages,
-      tools,
-      stream: true,
-    });
-    
     let content = '';
     let tool_calls = [];
     let id = null;
     let firstLoop = true;
+    
+    let completion
+    try {
+      completion = await this.state.openai.chat.completions.create({
+        model: this.currentModel,
+        messages: this.state.messages,
+        tools,
+        stream: true,
+      });
+    } catch (err) {
+      console.error("There was an error chatting with OpenAI:", err);
+      
+      const errorMessage = {
+        role: 'assistant',
+        content: `An error occurred. ${err.name}. ${err.message}.`,
+      };
+      
+      this.state.messages.push(errorMessage);
+      this.state.messagesManager.addMessageToList(errorMessage);
+      return;
+    }
     
     for await (const chunk of completion) {
       if (!id) { id = chunk.id; }
