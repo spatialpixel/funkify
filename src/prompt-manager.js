@@ -39,13 +39,8 @@ export class PromptManager {
     
     console.log("User prompt to submit: ", content);
     
-    const message = {
-      role: 'user',
-      content,
-    };
-    
     this.disablePrompt();
-    await this.state.chatManager.submitMessage(message);
+    await this.state.chatManager.submitPrompt(content);
     this.enablePrompt();
     this.clearPrompt();
     this.focusPrompt();

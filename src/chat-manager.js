@@ -3,6 +3,10 @@ import _ from 'lodash';
 
 import * as Helpers from './helpers.js';
 
+// General URL regex.
+const urlRegex = /(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*/gi;
+// Image url regex that also accounts for arbitrary URL parameters at the end.
+const imageUrlRegex = /\bhttps?:\/\/\S+\.(jpg|jpeg|png|gif|svg)(\?\S*)?\b/gi;
 
 export class ChatManager {
   constructor (state) {
@@ -29,20 +33,77 @@ export class ChatManager {
     this.state.openAIApiKeyChanged = false;
   }
   
+  detectImageUrls (str) {
+    return str.match(urlRegex);
+  }
+  
+  removeImageUrls (str) {
+    return _.trim(str.replace(urlRegex, ""));
+  }
+  
+  // Returns the proper "content" field for a user's message.
+  // This takes into account image URls
+  getUserMessageContent (prompt) {
+    const imageUrls = this.detectImageUrls(prompt);
+    console.log('Detected urls:', imageUrls);
+    
+    const hasImageUrls = !_.isEmpty(imageUrls);
+    
+    if (hasImageUrls) {
+      const promptWithoutUrls = this.removeImageUrls(prompt);
+      
+      // Create the return value.
+      const content = [
+        { type: "text", text: promptWithoutUrls }
+      ];
+      
+      // For each image URL, add a part to the content.
+      // https://platform.openai.com/docs/guides/vision
+      imageUrls.forEach(url => {
+        const part = {
+          type: "image_url",
+          image_url: {
+            url: url,
+            detail: "low"
+          }
+        };
+        
+        content.push(part);
+      });
+      
+      return content;
+    } else {
+      return prompt;
+    }
+  }
+  
+  addSystemContext () {
+    console.log("System context: ", this.systemContextInput.value);
+    
+    this.state.messages.push({
+      role: 'system',
+      content: this.systemContextInput.value
+    });
+    
+    this.systemContextInput.setAttribute('disabled', true);
+  }
+  
+  async submitPrompt (userPrompt) {
+    const message = {
+      role: 'user',
+      content: this.getUserMessageContent(userPrompt),
+    };
+    
+    await this.submitMessage(message);
+  }
+  
   async submitMessage (userMessage) {
     if (!this.state.openai || this.state.openAIApiKeyChanged) {
       this.initializeOpenAI();
     }
     
     if (_.isEmpty(this.state.messages)) {
-      console.log("System context: ", this.systemContextInput.value);
-      
-      this.state.messages.push({
-        role: 'system',
-        content: this.systemContextInput.value
-      });
-      
-      this.systemContextInput.setAttribute('disabled', true);
+      this.addSystemContext();
     }
     
     if (userMessage) {
@@ -76,7 +137,7 @@ export class ChatManager {
       
       const errorMessage = {
         role: 'assistant',
-        content: `An error occurred. ${err.name}. ${err.message}.`,
+        content: `An error occurred. ${err.name}. ${err.message}`,
       };
       
       this.state.messages.push(errorMessage);
@@ -98,29 +159,29 @@ export class ChatManager {
         
         // delta.tool_calls will be an array that has also chunks we need to combine.
         for (const tool_call of delta.tool_calls) {
+          const index = tool_call.index;
           
           // Populate the target tool_call object.
-          if (_.isEmpty(tool_calls[tool_call.index])) {
-            tool_calls[tool_call.index] = {
+          if (_.isEmpty(tool_calls[index])) {
+            tool_calls[index] = {
               type: "function",
               function: {
                 name: '',
                 arguments: '',
               },
               id: null,
-              index: tool_call.index
             };
           }
           
           // Populate the tool_call fields based on what we have in this current chunk.
           if (!_.isEmpty(tool_call.id)) {
-            tool_calls[tool_call.index].id = tool_call.id;
+            tool_calls[index].id = tool_call.id;
           }
           if (!_.isEmpty(tool_call.function.name)) {
-            tool_calls[tool_call.index].function.name += tool_call.function.name;
+            tool_calls[index].function.name += tool_call.function.name;
           }
           if (!_.isEmpty(tool_call.function.arguments)) {
-            tool_calls[tool_call.index].function.arguments += tool_call.function.arguments;
+            tool_calls[index].function.arguments += tool_call.function.arguments;
           }
         }
       } else {

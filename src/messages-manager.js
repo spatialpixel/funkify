@@ -1,5 +1,6 @@
 import { marked } from 'marked';
 import { v4 as uuidv4 } from 'uuid';
+import _ from 'lodash';
 
 const rightArrow = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" width="100" height="50">
   <!-- Arrow body -->
@@ -31,6 +32,22 @@ export default class MessagesManager {
     this.messagesList = document.querySelector("#messages-list");
   }
   
+  parseMessageContent (message) {
+    if (_.isArray(message.content)) {
+      const textPart = _.find(message.content, part => part.type === "text");
+      const urlParts = _.chain(message.content).filter(part => part.type === "image_url").map('image_url.url').value();
+      return {
+        text: textPart.text || "",
+        imageUrls: urlParts
+      };
+    } else {
+      return {
+        text: message.content,
+        imageUrls: []
+      };
+    }
+  }
+  
   addMessageToList (message, rightMessage, collapsible=false) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message');
@@ -45,7 +62,24 @@ export default class MessagesManager {
     messageDiv.appendChild(rightDiv);
     
     if (message) {
-      leftDiv.innerHTML = marked.parse(message.content);
+      const messageContent = this.parseMessageContent(message);
+      const hasImages = !_.isEmpty(messageContent.imageUrls);
+      
+      const textPart = marked.parse(messageContent.text);
+      if (hasImages) {
+        let html = `<div>`;
+        
+        messageContent.imageUrls.forEach(imageUrl => {
+          const imageHtml = `<a href="${imageUrl}" target="_blank"><img src="${imageUrl}" class="message-image" /></a> `;
+          html += imageHtml;
+        });
+        
+        html += '</div>';
+        
+        leftDiv.innerHTML = `<div>${textPart}</div>${html}`;
+      } else {
+        leftDiv.innerHTML = textPart;
+      }
     } else {
       leftDiv.innerHTML = '&nbsp;';
     }
