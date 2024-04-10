@@ -50,11 +50,9 @@ export class ChatManager {
     const hasImageUrls = !_.isEmpty(imageUrls);
     
     if (hasImageUrls) {
-      const promptWithoutUrls = this.removeImageUrls(prompt);
-      
       // Create the return value.
       const content = [
-        { type: "text", text: promptWithoutUrls }
+        { type: "text", text: prompt }
       ];
       
       // For each image URL, add a part to the content.
