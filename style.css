@@ -228,6 +228,10 @@ select {
 select:hover {
   background-color: var(--primary-color);
 }
+select[disabled] {
+  color: lightgray;
+  border-color: lightgray;
+}
 
 #open-api-key-form {
   position: relative;

@@ -17,12 +17,34 @@ export class ChatManager {
     this.state.messages = [];
     
     this.systemContextInput = document.querySelector('textarea#system-context');
+    
     this.modelPicker = document.querySelector('select#model-picker');
     this.modelPicker.value = "gpt-4-turbo";
+    this.modelPicker.addEventListener('change', this.onModelSelect.bind(this));
+    
+    this.visionDetailPicker = document.querySelector('select#vision-detail');
+    this.visionDetailPicker.value = "low";
   }
   
   get currentModel () {
     return this.modelPicker.value;
+  }
+  
+  get visionDetail () {
+    return this.visionDetailPicker.value;
+  }
+  
+  get isVisionModel () {
+    const modelsWithVision = ['gpt-4-turbo', 'gpt-4-turbo-2024-04-09'];
+    return modelsWithVision.includes(this.currentModel);
+  }
+  
+  onModelSelect (event) {
+    if (this.isVisionModel) {
+      this.visionDetailPicker.removeAttribute('disabled');
+    } else {
+      this.visionDetailPicker.setAttribute('disabled', true);
+    }
   }
   
   initializeOpenAI () {
@@ -45,11 +67,11 @@ export class ChatManager {
   // This takes into account image URls
   getUserMessageContent (prompt) {
     const imageUrls = this.detectImageUrls(prompt);
-    console.log('Detected urls:', imageUrls);
-    
     const hasImageUrls = !_.isEmpty(imageUrls);
     
-    if (hasImageUrls) {
+    if (hasImageUrls && this.isVisionModel) {
+      console.log('Detected urls:', imageUrls);
+      
       // Create the return value.
       const content = [
         { type: "text", text: prompt }
@@ -62,7 +84,7 @@ export class ChatManager {
           type: "image_url",
           image_url: {
             url: url,
-            detail: "low"
+            detail: this.visionDetail,
           }
         };
         
@@ -110,7 +132,10 @@ export class ChatManager {
       this.state.messagesManager.tagAsUserMessage(this.state.lastUserMessageElement);
     }
     
-    console.log("Model: ", this.currentModel);
+    console.log("Model:", this.currentModel);
+    if (this.isVisionModel) {
+      console.log("Vision detail:", this.visionDetail);
+    }
     
     const tools = _.map(this.state.tools, 'schema');
     let content = '';
