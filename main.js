@@ -9,10 +9,10 @@ import './src/collapsible-element.js';
 
 import { State } from './src/state.js';
 import { ChatManager } from './src/chat-manager.js';
+import FunkifyChatDelegate from './src/chat-delegate.js';
 import { KeyManager } from './src/key-manager.js';
 import { PromptManager } from './src/prompt-manager.js';
 import MessagesManager from './src/messages-manager.js';
-import examples from './src/example-functions.js';
 
 if (document.readyState === 'complete') {
   onReady();
@@ -23,7 +23,7 @@ if (document.readyState === 'complete') {
 function onReady () {
   const state = new State();
   
-  state.chatManager = new ChatManager(state);
+  state.chatManager = new ChatManager(state, new FunkifyChatDelegate());
   state.keyManager = new KeyManager(state);
   state.promptManager = new PromptManager(state);
   state.messagesManager = new MessagesManager(state);

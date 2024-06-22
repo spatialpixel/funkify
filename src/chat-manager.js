@@ -8,43 +8,52 @@ const urlRegex = /(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*/gi;
 // Image url regex that also accounts for arbitrary URL parameters at the end.
 const imageUrlRegex = /\bhttps?:\/\/\S+\.(jpg|jpeg|png|gif|svg)(\?\S*)?\b/gi;
 
+
+// Should be extended to include methods needed by the ChatManager.
+export class ChatManagerDelegate {
+  constructor () {
+    // Whatever
+  }
+  
+  get currentModel () {
+    return 'gpt-4-turbo';
+  }
+  
+  get visionDetail () {
+    return 'low';
+  }
+  
+  get systemContext () {
+    return 'You are a helpful assistant'
+  }
+}
+
+
 export class ChatManager {
-  constructor (state) {
+  constructor (state, delegate) {
     this.state = state;
+    this.delegate = delegate;
     
     this.state.openAIApiKeyChanged = false;
     this.state.openai = null;
     this.state.messages = [];
-    
-    this.systemContextInput = document.querySelector('textarea#system-context');
-    
-    this.modelPicker = document.querySelector('select#model-picker');
-    this.modelPicker.value = "gpt-4-turbo";
-    this.modelPicker.addEventListener('change', this.onModelSelect.bind(this));
-    
-    this.visionDetailPicker = document.querySelector('select#vision-detail');
-    this.visionDetailPicker.value = "low";
   }
   
   get currentModel () {
-    return this.modelPicker.value;
+    return this.delegate.currentModel;
   }
   
   get visionDetail () {
-    return this.visionDetailPicker.value;
+    return this.delegate.visionDetail;
+  }
+  
+  get systemContext () {
+    return this.delegate.systemContext;
   }
   
   get isVisionModel () {
-    const modelsWithVision = ['gpt-4-turbo', 'gpt-4-turbo-2024-04-09'];
+    const modelsWithVision = ['gpt-4o', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09'];
     return modelsWithVision.includes(this.currentModel);
-  }
-  
-  onModelSelect (event) {
-    if (this.isVisionModel) {
-      this.visionDetailPicker.removeAttribute('disabled');
-    } else {
-      this.visionDetailPicker.setAttribute('disabled', true);
-    }
   }
   
   initializeOpenAI () {
@@ -98,14 +107,14 @@ export class ChatManager {
   }
   
   addSystemContext () {
-    console.log("System context: ", this.systemContextInput.value);
+    console.log("System context: ", this.systemContext);
     
     this.state.messages.push({
       role: 'system',
-      content: this.systemContextInput.value
+      content: this.systemContext
     });
     
-    this.systemContextInput.setAttribute('disabled', true);
+    // this.systemContextInput.setAttribute('disabled', true);
   }
   
   async submitPrompt (userPrompt) {

@@ -53,13 +53,17 @@ a {
 }
 
 header {
-  padding: 18px 0 0 0;
+  padding: 10px 0 0 0;
   height: calc(70px - 18px);
 
-  /* To prevent margin collapse. */
   display: flex;
   flex-direction: row;
+  align-items: center;
   gap: 10px;
+}
+
+nav {
+  font-size: 2rem;
 }
 
 main {
@@ -118,10 +122,16 @@ main {
 #chat-header p {
   margin: 0;
 }
+#system-context-container {
+  padding-top: 10px;
+}
 textarea#system-context {
   border: 2px solid var(--border-color);
   min-height: 100px;
-}
+  color: var(--text-color);
+  background-color: var(--background-color);
+  width: calc(100% - 68px);
+} 
 
 #messages-list {
   display: flex;
@@ -131,13 +141,11 @@ textarea#system-context {
   overflow-x: hidden;
   text-wrap: pretty;
   overflow-wrap: anywhere;
-  margin-right: 10px;
 }
 
 .message {
   display: flex;
   flex-direction: row;
-  /* margin-bottom: 10px; */
   gap: 10px;
 }
 .message>.left {

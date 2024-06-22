@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +19,8 @@
   <body>
     <div class="container">
       <header>
-        <h1>Spatial Pixel → Funkify</h1>
+        <h1>Funkify by Spatial Pixel</h1>
+        
         <div style="flex-grow: 2"></div>
         
         <dropdown-menu class="dropdown-right dropdown-wide">
@@ -68,13 +68,8 @@
               
               <div style="flex-grow:2"></div>
               
-              <dropdown-menu class="dropdown-widest">
-                <span slot="button-text">Context</span>
-                <textarea id="system-context">You are a helpful assistant.</textarea>
-                <p>(Changes to this aren't recognized after your first message.)</p>
-              </dropdown-menu>
-              
               <select id="model-picker">
+                <option value="gpt-4o">gpt-4o</option>
                 <option value="gpt-4-turbo">gpt-4-turbo</option>
                 <option value="gpt-4-turbo-2024-04-09">gpt-4-turbo-2024-04-09</option>
                 <option value="gpt-4">gpt-4</option>
@@ -98,6 +93,14 @@
             <div class="column-6">
               <h3>Function Calls</h3>
             </div>
+          </div>
+          
+          <div id="system-context-container">
+            <div class="left column column-6">
+              <label>System Context</label>
+              <textarea id="system-context">You are a helpful assistant.</textarea>
+            </div>
+            <div class="right column column-6"></div>
           </div>
           
           <div id="messages-list"></div>
@@ -738,6 +741,71 @@
         </div>
       </div>
     </template> <!-- end dropdown-menu-template -->
+    
+    <template id="projects-list-template">
+      <style>
+        :host {
+          --primary-color: #f70;
+          --primary-color-lightened: #f90;
+        }
+        
+        button.action {
+          border: 2px solid var(--border-color);
+          border-radius: 3px;
+          color: var(--text-color);
+          background-color: var(--background-color);
+          padding: 5px 6px;
+          font-size: 1rem;
+        }
+        button.project {
+          font-size: 1.2rem;
+          border: none;
+          display: block;
+          color: var(--text-color);
+          background-color: var(--background-color);
+          padding: 4px;
+          width: 100%;
+          text-align: left;
+          border: none !important;
+        }
+        button:hover {
+          color: #222;
+          background-color: var(--primary-color-lightened);
+        }
+        button:active {
+          color: #222;
+          background-color: var(--primary-color);
+        }
+        button.project.current {
+          color: #222;
+          background-color: var(--primary-color);
+        }
+        
+        .actions {
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          border-bottom: 2px solid var(--border-color);
+          padding-bottom: 6px;
+          margin-bottom: 10px;
+        }
+        .spacer {
+          flex-grow: 2;
+        }
+        #delete-project {
+          border-color: darkred;
+        }
+      </style>
+      
+      <div class="actions">
+        <button class="action" id="new-project">New Project</button>
+        <button class="action" id="save-project">Save Current Project</button>
+        <div class="spacer"></div>
+        <button class="action" id="delete-project">Delete Current Project</button>
+      </div>
+      <div class="projects">
+      </div>
+    </template>
     
     <script type="module" src="/main.js"></script>
   </body>
