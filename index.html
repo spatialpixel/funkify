@@ -270,7 +270,13 @@
           flex-direction: row;
         }
         .parameter-left { 
-          width: 200px;
+          width: 250px;
+          display: flex;
+          flex-direction: row;
+          align-items: baseline;
+        }
+        .parameter-left label {
+          font-weight: bold;
         }
         .parameter-middle {
           border-left: 2px solid var(--border-color);
@@ -289,6 +295,7 @@
           gap: 20px;
         }
         input.parameter-name {
+          font-size: 1.2rem;
           outline: none;
           border: none;
           font-weight: bold;
@@ -322,6 +329,7 @@
           padding: 10px 0;
           background-color: var(--background-color);
           color: var(--color);
+          width: 100%;
         }
         button.remove-parameter {
           color: var(--primary-color);
@@ -379,6 +387,7 @@
       
       <div class="parameter-item">
         <div class="parameter-left">
+          <label>args.</label>
           <input type="text" class="parameter-name" />
         </div>
         
@@ -573,7 +582,7 @@
         
         <div class="column-6">
           <div class="tool-editor-header">
-            <h3>Implementation</h3>
+            <h3>Implementation ("args" holds the function call arguments)</h3>
             <div style="flex-grow: 2"></div>
             <button class="tool-editor-closer">×</button>
           </div>

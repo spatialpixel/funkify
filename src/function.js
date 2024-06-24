@@ -62,7 +62,9 @@ FunctionTool.factory = () => {
   const id = 'funkify-tool-' + uuidv4();
   const parameters = {};
   const required = [];
-  const f = `return "Success";`;
+  const f = `// An "args" object is provided to access the function call arguments.
+// e.g. args.keyword
+return "Success";`;
   
   const tr = new FunctionTool(id, name, description, parameters, required, f);
   return tr;

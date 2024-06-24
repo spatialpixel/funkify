@@ -173,6 +173,11 @@ textarea#system-context {
 .message-image {
   height: 200px;
 }
+.message pre {
+  overflow-x: scroll;
+  background-color: #eee;
+  padding: 4px;
+}
 
 textarea {
   font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
