@@ -590,7 +590,24 @@
     
     <template id="tools-list-template">
       <style>
-        @import "dropdown-menu.css";
+        /* Insert contents of dropdown-menu.css manually here. */
+        .dropdown-right {
+          --dropdown-right: 0;
+        }
+        .dropdown-wide {
+          --dropdown-width: 320px;
+        }
+        .dropdown-wider {
+          --dropdown-width: 500px;
+        }
+        .dropdown-widest {
+          --dropdown-width: 640px;
+        }
+        .dropdown-big {
+          --dropdown-button-font-size: 2rem;
+          --dropdown-button-border: none;
+          --dropdown-width: 640px;
+        }
         
         .tools-list-header {
           display: flex;
