@@ -10,3 +10,8 @@
 .dropdown-widest {
   --dropdown-width: 640px;
 }
+.dropdown-big {
+  --dropdown-button-font-size: 2rem;
+  --dropdown-button-border: none;
+  --dropdown-width: 640px;
+}

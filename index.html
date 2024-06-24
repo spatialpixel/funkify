@@ -68,6 +68,8 @@
               
               <div style="flex-grow:2"></div>
               
+              <label>
+              Model
               <select id="model-picker">
                 <option value="gpt-4o">gpt-4o</option>
                 <option value="gpt-4-turbo">gpt-4-turbo</option>
@@ -82,12 +84,16 @@
                 <option value="gpt-3.5-turbo-1106">gpt-3.5-turbo-1106</option>
                 <option value="gpt-3.5-turbo-0613">gpt-3.5-turbo-0613</option>
               </select>
+              </label>
               
-              <select id="vision-detail" title="Selectable for models with vision capabilities.">
-                <option value="low">low detail</option>
-                <option value="high">high detail</option>
-                <option value="auto">auto</option>
-              </select>
+              <label>
+                Vision
+                <select id="vision-detail" title="Selectable for models with vision capabilities.">
+                  <option value="low">low detail</option>
+                  <option value="high">high detail</option>
+                  <option value="auto">auto</option>
+                </select>
+              </label>
             </div>
             
             <div class="column-6">
@@ -95,15 +101,17 @@
             </div>
           </div>
           
-          <div id="system-context-container">
-            <div class="left column column-6">
-              <label>System Context</label>
-              <textarea id="system-context">You are a helpful assistant.</textarea>
+          <div class="scrollable">
+            <div id="system-context-container">
+              <div class="left column column-6">
+                <label>System Context</label>
+                <textarea id="system-context">You are a helpful assistant.</textarea>
+              </div>
+              <div class="right column column-6"></div>
             </div>
-            <div class="right column column-6"></div>
+            
+            <div id="messages-list"></div>
           </div>
-          
-          <div id="messages-list"></div>
           
           <div class="prompt">
             <div class="column-6" id="prompt-container">
@@ -118,7 +126,7 @@
         </div>
         
         <div id="tools" class="column column-3">
-          <tools-list></tools-list>
+          <tools-list class="has-dropdowns"></tools-list>
         </div>
       </main>
     </div>
@@ -220,6 +228,8 @@
           overflow-x: hidden;
           white-space: preserve;
           width: 100%;
+          border-top: 1px dotted gray;
+          border-bottom: 1px dotted gray;
         }
         .collapsible-content p {
           margin-top: 0; /* Because there's weirdness when using innerHTML. */
@@ -580,6 +590,7 @@
     
     <template id="tools-list-template">
       <style>
+        @import "src/dropdown-menu.css";
         .tools-list-header {
           display: flex;
           flex-direction: row;
@@ -614,13 +625,25 @@
         h3 {
           margin: 0;
         }
+        #exporter {
+          width: 100%;
+          height: 500px;
+          resize: none;
+        }
       </style>
       
       <div class="tools-list">
         <div class="tools-list-header">
           <h3>Function Definitions</h3>
           <div style="flex-grow:2"></div>
-          <button class="new-function" title="Add new function">ƒ</button>
+          <button class="new-function" title="Add new function">+ƒ</button>
+          <dropdown-menu class="dropdown-right dropdown-widest">
+            <span slot="button-text">ƒ→</span>
+            <div>
+              <h3>Export Functions as JSON</h3>
+              <textarea id="exporter"></textarea>
+            </div>
+          </dropdown-menu>
         </div>
         <div class="tools-list-main"></div>
       </div>

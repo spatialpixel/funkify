@@ -17,6 +17,7 @@ class ToolsList extends HTMLElement {
   
   connectedCallback () {
     this.toolsListElement = this.shadowRoot.querySelector('.tools-list-main');
+    this.toolsExporter = this.shadowRoot.querySelector('#exporter');
   }
   
   get tools () {
@@ -39,6 +40,7 @@ class ToolsList extends HTMLElement {
   
   loadToolsFromLocalStorage () {
     this.state.tools = FunctionTool.loadAllFromLocalStorage();
+    this.populateExportWindow();
     
     if (_.isEmpty(this.state.tools)) {
       this.showExamplesNotice();
@@ -58,6 +60,13 @@ class ToolsList extends HTMLElement {
     for (const tool of this.state.tools) {
       tool.save();
     }
+    this.populateExportWindow();
+  }
+  
+  populateExportWindow () {
+    const schema = _.map(this.tools, 'schema');
+    const schemaJson = JSON.stringify(schema, null, 2);
+    this.toolsExporter.value = schemaJson;
   }
   
   clearNotice () {

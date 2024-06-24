@@ -30,6 +30,7 @@ export default class MessagesManager {
     this.state.followStreaming = true;
     
     this.messagesList = document.querySelector("#messages-list");
+    this.scrollable = document.querySelector('.scrollable');
   }
   
   parseMessageContent (message) {
@@ -134,7 +135,7 @@ export default class MessagesManager {
   
   follow () {
     if (this.state.followStreaming) {
-      this.messagesList.scrollTop = this.messagesList.scrollHeight;
+      this.scrollable.scrollTop = this.scrollable.scrollHeight;
     }
   }
 }
