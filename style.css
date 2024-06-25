@@ -164,7 +164,7 @@ textarea#system-context {
   left: 0;
   top: 15px; /* Position the pseudo-element vertically centered */
 }
-.message.user>.left>* {
+.message.user>.left>*:first-child {
   background-color: rgba(var(--secondary-color-rgb), 0.5);
 }
 .message>.right>p {
