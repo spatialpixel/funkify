@@ -13,13 +13,13 @@ export default class FunctionTool {
     this.f = f;
   }
   
-  async call (args) {
+  async call (args, openai) {
     const body = `return async () => { let params = args; let parameters = args; ${this.f} }`
     
     let result
     try {
-      const callable = new Function('args', body);
-      result = await callable(args)();
+      const callable = new Function('args', 'openai', body);
+      result = await callable(args, openai)();
     } catch (err) {
       console.error('Error in Function call:', err);
       result = err;

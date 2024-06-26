@@ -22,7 +22,6 @@ if (document.readyState === 'complete') {
 
 function onReady () {
   const state = new State();
-  window.state = state;
   
   state.chatManager = new ChatManager(state, new FunkifyChatDelegate());
   state.keyManager = new KeyManager(state);

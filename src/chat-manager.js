@@ -258,7 +258,7 @@ export class ChatManager {
         
         const function_to_call = _.find(this.state.tools, t => t.name === function_name);
         
-        const function_result = await function_to_call.call(function_args);
+        const function_result = await function_to_call.call(function_args, this.state.openai);
         
         const pseudoMessage2 = {
           id: tool_call.id + "-response",
