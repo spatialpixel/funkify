@@ -8,7 +8,9 @@
 import FunctionTool from './function.js';
 import { v4 as uuidv4 } from 'uuid';
 
-const get_current_weather_code = `const url = \`https://api.open-meteo.com/v1/forecast?latitude=\${args.latitude}&longitude=\${args.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall\`;
+const get_current_weather_code = `// Retrieves data regarding the current weather from Open Meteo
+
+const url = \`https://api.open-meteo.com/v1/forecast?latitude=\${args.latitude}&longitude=\${args.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall\`;
 
 const result = await fetch(url);
 const response = await result.json();
@@ -39,17 +41,21 @@ const get_current_weather = () => (new FunctionTool(
   get_current_weather_code
 ));
 
-const search_academic_commons_code = `const objectToQueryString = obj => Object.keys(obj).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(obj[key])).join('&');
+const search_academic_commons_code = `// Searches Columbia University's "Academic Commons" given a keyword.
+
+const objectToQueryString = obj => Object.keys(obj).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(obj[key])).join('&');
 
 const urlParams = objectToQueryString({
+  search_type: 'keyword',
+  page: 1,
+  per_page: 10,
+  sort: 'best_match',
+  order: 'desc',
   q: args.keyword
 });
-  
-const headers = {
-  'Content-Type': 'application/json',
-};
-  
-const url = \`https://academiccommons.columbia.edu/api/v1/search?search_type=keyword&page=1&per_page=10&sort=best_match&order=desc&\${urlParams}\`
+
+const base = \`https://academiccommons.columbia.edu/api/v1/search\`;
+const url = \`$\{base\}?$\{urlParams\}\`;
 
 const response = await fetch(url);
 return await response.json();`
@@ -57,7 +63,7 @@ return await response.json();`
 const search_academic_commons = () => (new FunctionTool(
   `funkify-tool-${uuidv4()}`,
   'search_academic_commons',
-  "Searches Columbia University's Academic Commons database for a given topic keyword and returns ten relevant results.",
+  "Searches Columbia University's Academic Commons database for research given a topic keyword and returns ten relevant results.",
   {
     'keyword': {
       'type': 'string',
