@@ -493,6 +493,7 @@
           width: calc(100% - 4px);
           border: 2px solid var(--border-color);
           border-radius: 3px;
+          overflow-y: scroll;
         }
         
         h2, h3 {
@@ -510,7 +511,7 @@
         button:hover {
           background-color: var(--primary-color);
         }
-        input, select {
+        input[type=text], input[type=password], select {
           font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
           width: calc(100% - 22px);
           padding: 10px;
