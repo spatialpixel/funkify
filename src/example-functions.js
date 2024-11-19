@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const get_current_weather_code = `// Retrieves data regarding the current weather from Open Meteo
 
-const url = \`https://api.open-meteo.com/v1/forecast?latitude=\${args.latitude}&longitude=\${args.longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall\`;
+const url = \`https://api.open-meteo.com/v1/forecast?latitude=\${latitude}&longitude=\${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall\`;
 
 const result = await fetch(url);
 const response = await result.json();
@@ -51,7 +51,7 @@ const urlParams = objectToQueryString({
   per_page: 10,
   sort: 'best_match',
   order: 'desc',
-  q: args.keyword
+  q: keyword
 });
 
 const base = \`https://academiccommons.columbia.edu/api/v1/search\`;

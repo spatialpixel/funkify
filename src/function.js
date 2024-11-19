@@ -14,12 +14,24 @@ export default class FunctionTool {
   }
   
   async call (args, openai) {
-    const body = `return async () => { let params = args; let parameters = args; ${this.f} }`
+    const body = `return async () => { ${this.f} }`
     
     let result
     try {
-      const callable = new Function('args', 'openai', body);
-      result = await callable(args, openai)();
+      const globals = {
+        openai
+      };
+      
+      const argKeys = ['args', 'globals'];
+      const argValues = [args, globals];
+      
+      _.forEach(args, (argValue, argKey) => {
+        argKeys.push(argKey);
+        argValues.push(argValue);
+      });
+      
+      const callable = new Function(...argKeys, body);
+      result = await callable(...argValues)();
     } catch (err) {
       console.error('Error in Function call:', err);
       result = err;
