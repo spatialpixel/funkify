@@ -14,7 +14,7 @@ export default class FunctionTool {
   }
   
   async call (args, openai) {
-    const body = `return async () => { ${this.f} }`
+    const body = `return async () => { ${this.f} }`;
     
     let result
     try {
@@ -22,6 +22,7 @@ export default class FunctionTool {
         openai
       };
       
+      // TODO "args" is deprecated, but included here until the tutorials are updated.
       const argKeys = ['args', 'globals'];
       const argValues = [args, globals];
       
@@ -74,8 +75,8 @@ FunctionTool.factory = () => {
   const id = 'funkify-tool-' + uuidv4();
   const parameters = {};
   const required = [];
-  const f = `// An "args" object is provided to access the function call arguments.
-// e.g. args.keyword
+  const f = `// Just the function body here. "await" is supported.
+
 return "Success";`;
   
   const tr = new FunctionTool(id, name, description, parameters, required, f);

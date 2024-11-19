@@ -21,22 +21,22 @@ class ParameterItem extends HTMLElement {
   }
   
   populate (value, name, required) {
-    const parameterNameField = this.shadowRoot.querySelector('.parameter-name');
-    parameterNameField.value = name;
+    this.parameterNameField = this.shadowRoot.querySelector('.parameter-name');
+    this.parameterNameField.value = name;
     
-    const parameterDescField = this.shadowRoot.querySelector('.parameter-description');
-    parameterDescField.value = value.description;
+    this.parameterDescField = this.shadowRoot.querySelector('.parameter-description');
+    this.parameterDescField.value = value.description;
     
-    const parameterReqField = this.shadowRoot.querySelector('.parameter-required');
-    parameterReqField.checked = _.includes(required, name);
+    this.parameterReqField = this.shadowRoot.querySelector('.parameter-required');
+    this.parameterReqField.checked = _.includes(required, name);
     
-    const parameterTypeField = this.shadowRoot.querySelector('.parameter-type');
+    this.parameterTypeField = this.shadowRoot.querySelector('.parameter-type');
     if (value.type === "array" && value.items.type === "number") {
-      parameterTypeField.value = "array-number";
+      this.parameterTypeField.value = "array-number";
     } else if (value.type === "array" && value.items.type === "string") {
-      parameterTypeField.value = "array-string";
+      this.parameterTypeField.value = "array-string";
     } else {
-      parameterTypeField.value = value.type;
+      this.parameterTypeField.value = value.type;
     }
   }
 }

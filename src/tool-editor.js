@@ -92,12 +92,15 @@ class ToolEditor extends HTMLElement {
   addParameter (event) {
     const value = {
       'type': 'string',
-      'description': 'A generic property'
+      'description': ''
     };
-    const name = 'new-parameter';
+    
+    const name = '';
     const param = this.renderParameterForm(value, name);
     const parametersList = this.shadowRoot.querySelector('.parameters-list');
     parametersList.appendChild(param);
+    
+    param.parameterNameField.focus();
   }
   
   close () {

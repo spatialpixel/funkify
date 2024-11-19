@@ -20,7 +20,7 @@ return response;`
 const get_current_weather = () => (new FunctionTool(
   `funkify-tool-${uuidv4()}`,
   'get_current_weather',
-  'Tells the current weather given a location',
+  'Reports the current weather in a given location.',
   {
     'location': {
       'type': 'string',
