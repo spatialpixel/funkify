@@ -258,11 +258,12 @@ export class ChatManager {
         
         const function_to_call = _.find(this.state.tools, t => t.name === function_name);
         
-        const function_result = await function_to_call.call(function_args, this.state.openai);
+        const function_result = await function_to_call.call(function_args, this.state);
+        const prettyFunctionResult = Helpers.prettyString(function_result);
         
         const pseudoMessage2 = {
           id: tool_call.id + "-response",
-          content: Helpers.prettyString(function_result)
+          content: prettyFunctionResult,
         };
         this.state.messagesManager.addMessageToList(null, pseudoMessage2, true);
         
@@ -270,7 +271,7 @@ export class ChatManager {
           "tool_call_id": tool_call.id,
           "role": "tool",
           "name": function_name,
-          "content": Helpers.stringify(function_result),
+          "content": prettyFunctionResult,
         };
         this.state.messages.push(functionResponseMessage);
       }

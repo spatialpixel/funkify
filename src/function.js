@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
 export default class FunctionTool {
-  constructor (id, name, description, properties, required, f) {
+  constructor (id, name, description, properties, required, f, language) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -11,15 +11,35 @@ export default class FunctionTool {
     this.required = required;
     
     this.f = f;
+    
+    this.language = language || 'js';
   }
   
-  async call (args, openai) {
-    const body = `return async () => { ${this.f} }`;
+  applyDefaults (args) {
+    // Default all values to null or None so we don't run into undefined errors.
+    const defaults = _.mapValues(this.properties, () => null);
+    return _.defaults(args, defaults);
+  }
+  
+  async call (args, state) {
+    const argsWithDefaults = this.applyDefaults(args);
+    
+    if (this.language === 'js') {
+      return await this.callJavaScript(argsWithDefaults, state);
+    } else if (this.language === 'py') {
+      return await this.callPython(argsWithDefaults, state);
+    }
+  }
+  
+  async callJavaScript (args, state) {
+    const body = `return async () => {
+${ this.f }
+}`;
     
     let result
     try {
       const globals = {
-        openai
+        openai: state.openai
       };
       
       // TODO "args" is deprecated, but included here until the tutorials are updated.
@@ -38,6 +58,13 @@ export default class FunctionTool {
       result = err;
     }
     
+    return result;
+  }
+  
+  async callPython (args, state) {
+    // https://pyodide.org/en/stable/usage/faq.html#how-can-i-execute-code-in-a-custom-namespace
+    const namespace = state.pyodide.toPy(args);
+    const result = state.pyodide.runPython(this.f, { globals: namespace });
     return result;
   }
   
@@ -60,6 +87,7 @@ export default class FunctionTool {
     return {
       implementation: this.f,
       schema: this.schema,
+      language: this.language,
     }
   }
   
@@ -75,11 +103,13 @@ FunctionTool.factory = () => {
   const id = 'funkify-tool-' + uuidv4();
   const parameters = {};
   const required = [];
+
   const f = `// Just the function body here. "await" is supported.
 
 return "Success";`;
+  const language = 'js';
   
-  const tr = new FunctionTool(id, name, description, parameters, required, f);
+  const tr = new FunctionTool(id, name, description, parameters, required, f, language);
   return tr;
 }
 
@@ -91,8 +121,9 @@ FunctionTool.parse = (data, key) => {
     const properties = data.schema.function.parameters.properties;
     const required = data.schema.function.parameters.required;
     const f = data.implementation;
+    const language = data.language;
     
-    return new FunctionTool(id, name, description, properties, required, f);
+    return new FunctionTool(id, name, description, properties, required, f, language);
   } catch (err) {
     console.error(`Error while parsing function:`, err)
     return null;

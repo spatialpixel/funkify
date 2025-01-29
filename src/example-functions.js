@@ -38,7 +38,8 @@ const get_current_weather = () => (new FunctionTool(
     }
   },
   ['latitude', 'longitude'],
-  get_current_weather_code
+  get_current_weather_code,
+  'js'
 ));
 
 const search_academic_commons_code = `// Searches Columbia University's "Academic Commons" given a keyword.
@@ -71,10 +72,35 @@ const search_academic_commons = () => (new FunctionTool(
     }
   },
   ['keyword'],
-  search_academic_commons_code
+  search_academic_commons_code,
+  'js'
+));
+
+const generate_sample_data_py_code = `# Generates some random numbers in a normal distribution using numpy
+
+import numpy as np
+ 
+x = np.random.normal(10, 20, (num_samples or 10,))
+x.tolist()
+`;
+
+const generate_sample_data_py = () => (new FunctionTool(
+  `funkify-tool-${uuidv4()}`,
+  'generate_sample_data',
+  'Generates some random numeric sample data in a normal distribution given a number of samples.',
+  {
+    'num_samples': {
+      'type': 'number',
+      'description': 'The number of samples to generate.'
+    }
+  },
+  [], // required
+  generate_sample_data_py_code,
+  'py'
 ));
 
 export default () => ([
   get_current_weather(),
-  search_academic_commons()
+  search_academic_commons(),
+  generate_sample_data_py()
 ]);

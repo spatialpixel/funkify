@@ -14,6 +14,8 @@
     <link rel="mask-icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"> <!-- for Safari-->
     <link rel="manifest" href="/site.webmanifest">
     
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
+    
     <title>Funkify by Spatial Pixel</title>
   </head>
   <body>
@@ -495,13 +497,18 @@
           flex-direction: row;
           align-items: center;
           justify-content: space-between;
+          gap: 10px;
+          
           min-height: 50px;
         }
         .tool-editor-header h3 {
           margin: 0;
         }
-        p.note {
-          margin-left: 8px;
+        .note {
+          margin: 0;
+          flex-grow: 2;
+        }
+        .note p {
           font-size: 1.17rem;
         }
         .tool-editor-main {
@@ -544,6 +551,7 @@
         .function-description-field:hover {
           background-color: rgba(var(--primary-color-rgb), 0.1);
         }
+        
         #function-implementation {
           flex-grow: 2;
           width: calc(100% - 4px);
@@ -551,12 +559,21 @@
           border-radius: 3px;
           overflow-y: scroll;
         }
+        
+        select#language-selection {
+          padding: 5px;
+          width: min-content;
+          margin: 0;
+          border: 2px solid var(--border-color);
+        }
         button.tool-editor-closer {
           height: 40px;
           width: 40px;
           font-size: 30px;
           line-height: 40px;
           padding: 0 0 4px 0;
+          
+          flex: 0 0 40px;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -596,8 +613,17 @@
         <div class="column-6">
           <div class="tool-editor-header">
             <h3>Implementation</h3>
-            <p class="note">(Just the function body. It’s wrapped in async function() { … } for you.)</p>
-            <div style="flex-grow: 2"></div>
+            <div class="note">
+              <p>(Just the function body.)</p>
+            </div>
+            
+            <select id="language-selection">
+              <option value="js">JavaScript</option>
+              <option value="py">Python</option>
+            </select>
+            
+            <!-- <div style="flex-grow: 2"></div> -->
+            
             <button class="tool-editor-closer">×</button>
           </div>
           

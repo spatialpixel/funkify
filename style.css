@@ -216,6 +216,9 @@ textarea#system-context:hover {
   padding-left: 15px;
   width: calc(50% - 15px); /* To compensate for the symbol padding. */
 }
+.message.user>.left p {
+  font-size: 1.2rem;
+}
 .message.user>.left::before {
   content: "▶︎";
   position: absolute;

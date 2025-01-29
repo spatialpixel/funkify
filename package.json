@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/lang-python": "^6.1.7",
     "codemirror": "^6.0.1",
     "lodash": "^4.17.21",
     "marked": "^12.0.1",

@@ -20,7 +20,7 @@ if (document.readyState === 'complete') {
   document.addEventListener("DOMContentLoaded", onReady);
 }
 
-function onReady () {
+async function onReady () {
   const state = new State();
   
   state.chatManager = new ChatManager(state, new FunkifyChatDelegate());
@@ -35,4 +35,13 @@ function onReady () {
   state.toolsList.populate(state);
   
   state.promptManager.focusPrompt();
+  
+  state.pyodide = await loadPyodide();
+  
+  // Load micropip
+  await state.pyodide.loadPackage("micropip");
+  const micropip = state.pyodide.pyimport("micropip");
+  
+  // Load numpy to see whether the download works.
+  await micropip.install("numpy");
 }

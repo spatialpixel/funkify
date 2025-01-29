@@ -1,8 +1,11 @@
 import _ from 'lodash';
 import { basicSetup, EditorView } from "codemirror";
 import { EditorState, Compartment } from "@codemirror/state";
-import { language } from "@codemirror/language"
-import { javascript } from "@codemirror/lang-javascript"
+import { language, indentUnit } from "@codemirror/language";
+import { keymap } from "@codemirror/view";
+import { indentWithTab } from "@codemirror/commands";
+import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
 
 const languageConf = new Compartment // Some codemirror thing.
 
@@ -20,14 +23,19 @@ class ToolEditor extends HTMLElement {
   }
   
   connectedCallback () {
-    const closeButton = this.shadowRoot.querySelector('button.tool-editor-closer');
-    closeButton.addEventListener('click', this.close.bind(this));
+    this.closeButton = this.shadowRoot.querySelector('button.tool-editor-closer');
+    this.closeButton.addEventListener('click', this.close.bind(this));
     
-    const saveButton = this.shadowRoot.querySelector('button.tool-save');
-    saveButton.addEventListener('click', this.save.bind(this));
+    this.saveButton = this.shadowRoot.querySelector('button.tool-save');
+    this.saveButton.addEventListener('click', this.save.bind(this));
     
-    const addParameterButton = this.shadowRoot.querySelector('button.add-parameter');
-    addParameterButton.addEventListener('click', this.addParameter.bind(this));
+    this.addParameterButton = this.shadowRoot.querySelector('button.add-parameter');
+    this.addParameterButton.addEventListener('click', this.addParameter.bind(this));
+    
+    this.functionNameField = this.shadowRoot.querySelector('.function-name-field');
+    this.functionDescriptionField = this.shadowRoot.querySelector('.function-description-field');
+    this.languageSelect = this.shadowRoot.querySelector('select#language-selection');
+    this.parametersList = this.shadowRoot.querySelector('.parameters-list');
   }
   
   initialize (state) {
@@ -35,11 +43,9 @@ class ToolEditor extends HTMLElement {
   }
   
   save (event) {
-    const functionNameField = this.shadowRoot.querySelector('.function-name-field');
-    this.tool.name = functionNameField.value;
-    
-    const functionDescriptionField = this.shadowRoot.querySelector('.function-description-field');
-    this.tool.description = functionDescriptionField.value;
+    this.tool.name = this.functionNameField.value;
+    this.tool.description = this.functionDescriptionField.value;
+    this.tool.language = this.languageSelect.value;
     
     this.tool.f = this.getEditorContents();
     
@@ -97,8 +103,7 @@ class ToolEditor extends HTMLElement {
     
     const name = '';
     const param = this.renderParameterForm(value, name);
-    const parametersList = this.shadowRoot.querySelector('.parameters-list');
-    parametersList.appendChild(param);
+    this.parametersList.appendChild(param);
     
     param.parameterNameField.focus();
   }
@@ -108,16 +113,13 @@ class ToolEditor extends HTMLElement {
     toolEditorElt.style.display = 'none';
     
     // Clear the function name field.
-    const functionNameField = this.shadowRoot.querySelector('.function-name-field');
-    functionNameField.value = '';
+    this.functionNameField.value = '';
     
     // Clear the function description field.
-    const functionDescriptionField = this.shadowRoot.querySelector('.function-description-field');
-    functionDescriptionField.value = '';
+    this.functionDescriptionField.value = '';
     
     // Remove all the parameters.
-    const parametersList = this.shadowRoot.querySelector('.parameters-list');
-    parametersList.innerHTML = '';
+    this.parametersList.innerHTML = '';
     
     // Clear the editor
     this.clearEditor();
@@ -136,41 +138,33 @@ class ToolEditor extends HTMLElement {
     
     this.show();
     
-    const functionNameField = this.shadowRoot.querySelector('.function-name-field');
-    functionNameField.value = this.tool.name;
+    this.functionNameField.value = this.tool.name;
+    this.functionDescriptionField.value = this.tool.description;
+    this.languageSelect.value = this.tool.language;
     
-    const functionDescriptionField = this.shadowRoot.querySelector('.function-description-field');
-    functionDescriptionField.value = this.tool.description;
-    
-    const parametersList = this.shadowRoot.querySelector('.parameters-list');
     _.forEach(tool.properties, (value, name) => {
       const param = this.renderParameterForm(value, name, this.tool.required);
-      parametersList.appendChild(param);
+      this.parametersList.appendChild(param);
     });
     
     this.populateEditor();
     
     if (isNewFunction) {
-      this.focusFunctionNameField();
+      this.functionNameField.focus();
     }
-  }
-  
-  focusFunctionNameField () {
-    const functionNameField = this.shadowRoot.querySelector('.function-name-field');
-    functionNameField.focus();
   }
   
   populateEditor () {
     if (!this.tool) { return; }
     
     if (!this.editorView) {
-      this.createEditor(this.tool.f);
+      this.createEditor(this.tool.f, this.tool.language);
     }
     
-    this.setEditorContents(this.tool.f);
+    this.setEditorContents(this.tool.f, this.tool.language);
   }
   
-  createEditor (text = "") {
+  createEditor (text="", lang="js") {
     this.editorContainer = this.shadowRoot.querySelector('#function-implementation');
     
     this.editorTheme = EditorView.baseTheme({
@@ -182,25 +176,52 @@ class ToolEditor extends HTMLElement {
       },
     });
     
+    const languagePackage = this.getEditorLanguagePackage(lang);
+    
     this.editorView = new EditorView({
       doc: text,
       extensions: [
         basicSetup,
         this.editorTheme,
-        languageConf.of(javascript()),
+        languagePackage,
         EditorView.lineWrapping,
       ],
       parent: this.editorContainer
     });
   }
   
-  setEditorContents (text) {
+  getEditorLanguagePackage (lang="js") {
+    if (lang === "js") {
+      return languageConf.of(javascript());
+    } else if (lang === "py") {
+      return languageConf.of(python());
+    } else {
+      return languageConf.of(javascript());
+    }
+  }
+  
+  setEditorContents (text, lang="js") {
+    const languagePackage = this.getEditorLanguagePackage(lang);
+    
     this.editorView.setState(EditorState.create({
       doc: text,
       extensions: [
         basicSetup,
-        languageConf.of(javascript()),
+        languagePackage,
         EditorView.lineWrapping,
+        indentUnit.of("    "), // Set indent unit to 4 spaces
+        keymap.of([{
+          key: "Tab",
+          run: (target) => {
+            // Insert 4 spaces when nothing is selected
+            if (target.state.selection.ranges.every(r => r.empty)) {
+              target.dispatch(target.state.replaceSelection("    "));
+              return true;
+            }
+            // Use default indentation for selections
+            return indentWithTab(target);
+          }
+        }])
       ]
     }));
   }
