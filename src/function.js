@@ -64,7 +64,7 @@ ${ this.f }
   async callPython (args, state) {
     // https://pyodide.org/en/stable/usage/faq.html#how-can-i-execute-code-in-a-custom-namespace
     const namespace = state.pyodide.toPy(args);
-    const result = state.pyodide.runPython(this.f, { globals: namespace });
+    const result = state.pyodide.runPythonAsync(this.f, { globals: namespace });
     return result;
   }
   

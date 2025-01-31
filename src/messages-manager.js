@@ -1,6 +1,9 @@
-import { marked } from 'marked';
-import { v4 as uuidv4 } from 'uuid';
-import _ from 'lodash';
+/**
+ * @module SpatialPixel.Funkify.MessageList
+ * @description Implementation for Funkify's rendering of chat messages.
+ * @author William Martin
+ * @version 0.1.0
+ */
 
 const rightArrow = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" width="100" height="50">
   <!-- Arrow body -->
@@ -33,75 +36,15 @@ export default class MessagesManager {
     this.scrollable = document.querySelector('.scrollable');
   }
   
-  parseMessageContent (message) {
-    if (_.isArray(message.content)) {
-      const textPart = _.find(message.content, part => part.type === "text");
-      const urlParts = _.chain(message.content).filter(part => part.type === "image_url").map('image_url.url').value();
-      return {
-        text: textPart.text || "",
-        imageUrls: urlParts
-      };
-    } else {
-      return {
-        text: message.content,
-        imageUrls: []
-      };
-    }
-  }
-  
-  addMessageToList (message, rightMessage, collapsible=false) {
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message');
-    messageDiv.id = message?.id || rightMessage?.id || ("message-" + uuidv4());
+  addMessageToList (message, data=null) {
+    const messageItem = document.createElement('message-item');
+    this.messagesList.appendChild(messageItem);
     
-    const leftDiv = document.createElement('div');
-    leftDiv.classList.add('left');
-    messageDiv.appendChild(leftDiv);
-    
-    const rightDiv = document.createElement('div');
-    rightDiv.classList.add('right');
-    messageDiv.appendChild(rightDiv);
-    
-    if (message) {
-      const messageContent = this.parseMessageContent(message);
-      const hasImages = !_.isEmpty(messageContent.imageUrls);
-      
-      const textPart = marked.parse(messageContent.text);
-      if (hasImages) {
-        let html = `<div>`;
-        
-        messageContent.imageUrls.forEach(imageUrl => {
-          const imageHtml = `<a href="${imageUrl}" target="_blank"><img src="${imageUrl}" class="message-image" /></a> `;
-          html += imageHtml;
-        });
-        
-        html += '</div>';
-        
-        leftDiv.innerHTML = `<div>${textPart}</div>${html}`;
-      } else {
-        leftDiv.innerHTML = textPart;
-      }
-    } else {
-      leftDiv.innerHTML = '&nbsp;';
-    }
-    
-    if (rightMessage) {
-      const renderedContent = marked.parse(rightMessage.content);
-      
-      if (collapsible) {
-        const collapsible = document.createElement('collapsible-element');
-        collapsible.populate('Response', renderedContent);
-        rightDiv.appendChild(collapsible);
-      } else {
-        rightDiv.innerHTML = renderedContent;
-      }
-    }
-    
-    this.messagesList.appendChild(messageDiv);
+    messageItem.setMessage(message, data);
     
     this.follow();
     
-    return messageDiv;
+    return messageItem;
   }
   
   tagAsUserMessage (messageDiv) {
@@ -109,17 +52,17 @@ export default class MessagesManager {
   }
   
   updateMessageInList (id, content) {
-    let messageDiv = document.querySelector(`#${id}`);
-    if (!messageDiv) {
-      messageDiv = this.addMessageToList({ id, content });
+    let messageItem = document.querySelector(`#${id}`);
+    if (!messageItem) {
+      const pseudoMessage = { id, content, role: 'assistant' };
+      messageItem = this.addMessageToList(pseudoMessage);
     }
     
-    const leftDiv = messageDiv.querySelector(`.left`);
-    leftDiv.innerHTML = marked.parse(content);
+    messageItem.updateContent(content);
     
     this.follow();
     
-    return messageDiv;
+    return messageItem;
   }
   
   addArrowToMessage (messageElement, direction) {

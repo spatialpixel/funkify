@@ -4,14 +4,18 @@ export class KeyManager {
   constructor (state) {
     this.state = state;
     
+    // State initialization
+    this.state.apiKey = this.defaultApiKeyGetter();
+    this.state.apiKeyChanged = false;
+    
+    // UI Stuff
     Interface.initializeTextInput(
       '#openai-api-key',
       this.apiKeyHandler.bind(this),
       this.defaultApiKeyGetter.bind(this)
     );
-    // Note that initializeTextInput does not call the setter by default.
     
-    this.state.apiKey = this.defaultApiKeyGetter();
+    // Note that initializeTextInput does not call the setter by default.
     this.addToggleVisibilityButton();
   }
   
@@ -31,7 +35,7 @@ export class KeyManager {
   
   apiKeyHandler (value, event) {
     this.state.apiKey = value;
-    this.state.openAIApiKeyChanged = true;
+    this.state.apiKeyChanged = true;
     localStorage.setItem('funkify-openai-api-key', this.state.apiKey);
   }
   

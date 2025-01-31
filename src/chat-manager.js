@@ -250,6 +250,7 @@ export class ChatManager {
         const function_name = tool_call.function.name;
         const function_args = JSON.parse(tool_call.function.arguments);
         
+        // Add a fake message that reflects the function call and arguments.
         const pseudoMessage1 = {
           id: tool_call.id,
           content: `**ƒ ${function_name}** → ${tool_call.function.arguments}`
@@ -259,14 +260,16 @@ export class ChatManager {
         const function_to_call = _.find(this.state.tools, t => t.name === function_name);
         
         const function_result = await function_to_call.call(function_args, this.state);
-        const prettyFunctionResult = Helpers.prettyString(function_result);
         
+        // Add a fake message that shows the result of calling the function.
+        const prettyFunctionResult = Helpers.prettyString(function_result);
         const pseudoMessage2 = {
           id: tool_call.id + "-response",
           content: prettyFunctionResult,
         };
         this.state.messagesManager.addMessageToList(null, pseudoMessage2, true);
         
+        // Create the actual message that the LLM needs for the completion.
         const functionResponseMessage = {
           "tool_call_id": tool_call.id,
           "role": "tool",
@@ -274,7 +277,7 @@ export class ChatManager {
           "content": prettyFunctionResult,
         };
         this.state.messages.push(functionResponseMessage);
-      }
+      } // end tools loop
       
       // Handle this recursively for now.
       // TODO Put this in a loop instead?

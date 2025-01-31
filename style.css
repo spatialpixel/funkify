@@ -206,39 +206,6 @@ textarea#system-context:hover {
   display: flex;
   flex-direction: column;
 }
-.message {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-}
-.message>.left {
-  position: relative;
-  padding-left: 15px;
-  width: calc(50% - 15px); /* To compensate for the symbol padding. */
-}
-.message.user>.left p {
-  font-size: 1.2rem;
-}
-.message.user>.left::before {
-  content: "▶︎";
-  position: absolute;
-  left: 0;
-  top: 15px; /* Position the pseudo-element vertically centered */
-}
-.message.user>.left>*:first-child {
-  background-color: rgba(var(--secondary-color-rgb), 0.5);
-}
-.message>.right>p {
-  margin: 0;
-}
-.message-image {
-  height: 200px;
-}
-.message pre {
-  overflow-x: scroll;
-  background-color: #eee;
-  padding: 4px;
-}
 
 textarea#prompt {
   width: calc(100% - 30px);
@@ -264,7 +231,7 @@ textarea#prompt:focus {
 }
 
 
-#open-api-key-form {
+#openai-api-key-form {
   position: relative;
 }
 #openai-api-key {

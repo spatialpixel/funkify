@@ -30,7 +30,7 @@
           <ul>
             <li>
               <label>OpenAI API Key</label>
-              <div id="open-api-key-form">
+              <div id="openai-api-key-form">
                 <input type="password" id="openai-api-key" autocomplete="new-password" />
                 <button id="toggle-openai-key-visibility">👁️</button>
               </div>
@@ -74,17 +74,10 @@
               Model
               <select id="model-picker">
                 <option value="gpt-4o">gpt-4o</option>
+                <option value="gpt-4o-mini">gpt-4o-mini</option>
                 <option value="gpt-4-turbo">gpt-4-turbo</option>
-                <option value="gpt-4-turbo-2024-04-09">gpt-4-turbo-2024-04-09</option>
                 <option value="gpt-4">gpt-4</option>
-                <option value="gpt-4-turbo-preview">gpt-4-turbo-preview</option>
-                <option value="gpt-4-0125-preview">gpt-4-0125-preview</option>
-                <option value="gpt-4-1106-preview">gpt-4-1106-preview</option>
-                <option value="gpt-4-0613">gpt-4-0613</option>
                 <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-                <option value="gpt-3.5-turbo-0125">gpt-3.5-turbo-0125</option>
-                <option value="gpt-3.5-turbo-1106">gpt-3.5-turbo-1106</option>
-                <option value="gpt-3.5-turbo-0613">gpt-3.5-turbo-0613</option>
               </select>
               </label>
               
@@ -896,6 +889,52 @@
         <button class="action" id="delete-project">Delete Current Project</button>
       </div>
       <div class="projects">
+      </div>
+    </template>
+    
+    <template id="message-item-template">
+      <style>
+      .message {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+      }
+      .left {
+        position: relative;
+        padding-left: 15px;
+        width: calc(50% - 15px); /* To compensate for the symbol padding. */
+      }
+      .user .left p {
+        font-size: 1.2rem;
+      }
+      .user .left::before {
+        content: "▶︎";
+        position: absolute;
+        left: 0;
+        top: 15px; /* Position the pseudo-element vertically centered */
+      }
+      .user .left>*:first-child {
+        background-color: rgba(var(--secondary-color-rgb), 0.5);
+      }
+      .right>p {
+        margin: 0;
+      }
+      .message-image {
+        height: 200px;
+      }
+      .message pre {
+        overflow-x: scroll;
+        background-color: #eee;
+        padding: 4px;
+        white-space: pre-wrap;
+      }
+      </style>
+      
+      <div class="message">
+        <div class="left">
+        </div>
+        <div class="right">
+        </div>
       </div>
     </template>
     
