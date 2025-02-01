@@ -88,7 +88,7 @@ export class ChatManagerDelegate {
   }
   
   // Creates a completion object.
-  createTextCompletion (...args) {
+  createTextCompletion (params) {
     throw new Error('required method')
   }
   

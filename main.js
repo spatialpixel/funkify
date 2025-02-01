@@ -7,13 +7,15 @@ import './src/tool-item.js';
 import './src/parameter-item.js';
 import './src/collapsible-element.js';
 import './src/message-item.js';
+import './src/key-manager.js'
 
 import { State } from './src/state.js';
 import { ChatManager } from './src/chat-manager.js';
 import FunkifyChatDelegate from './src/funkify-chat-delegate.js';
-import { KeyManager } from './src/key-manager.js';
 import { PromptManager } from './src/prompt-manager.js';
 import MessagesManager from './src/messages-manager.js';
+
+import OpenAIService from './src/service-openai.js';
 
 if (document.readyState === 'complete') {
   onReady();
@@ -24,9 +26,11 @@ if (document.readyState === 'complete') {
 async function onReady () {
   const state = new State();
   
+  state.storage = localStorage;
+  state.service = new OpenAIService(state);
+  
   const chatDelegate = new FunkifyChatDelegate(state);
   state.chatManager = new ChatManager(state, chatDelegate);
-  state.keyManager = new KeyManager(state);
   state.promptManager = new PromptManager(state);
   state.messagesManager = new MessagesManager(state);
   

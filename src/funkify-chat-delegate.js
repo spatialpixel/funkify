@@ -1,4 +1,3 @@
-import OpenAI from 'openai';
 import { ChatManagerDelegate } from './chat-manager-delegate.js';
 import _ from 'lodash';
 
@@ -7,13 +6,12 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
     super();
     this.state = state;
     
-    this.state.openai = null;
     this.state.messages = [];
     
     this.systemContextInput = document.querySelector('textarea#system-context');
     
     this.modelPicker = document.querySelector('select#model-picker');
-    this.modelPicker.value = "gpt-4o";
+    this.modelPicker.value = this.state.service.models[0];
     this.modelPicker.addEventListener('change', this.onModelSelect.bind(this));
     
     this.visionDetailPicker = document.querySelector('select#vision-detail');
@@ -41,8 +39,7 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
   }
   
   get isVisionModel () {
-    const modelsWithVision = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4']; // gpt-3.5-turbo??
-    return modelsWithVision.includes(this.currentModel);
+    return this.service.modelSupportVision(this.currentModel);
   }
   
   get tools () {
@@ -90,18 +87,10 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
   }
   
   initializeLLMService () {
-    if (!this.state.openai || this.state.apiKeyChanged) {
-      this.state.openai = new OpenAI({
-        apiKey: this.state.apiKey,
-        dangerouslyAllowBrowser: true
-      });
-      
-      this.state.apiKeyChanged = false;
-    }
+    this.state.service.initialize();
   }
   
-  async createTextCompletion (...args) {
-    const params = args[0];
-    return await this.state.openai.chat.completions.create(params);
+  async createTextCompletion (params) {
+    return this.state.service.createTextCompletion(params);
   }
 }

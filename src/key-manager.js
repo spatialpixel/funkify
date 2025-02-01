@@ -1,45 +1,49 @@
 import * as Interface from './interface.js';
 
-export class KeyManager {
-  constructor (state) {
-    this.state = state;
+class KeyManager extends HTMLElement {
+  constructor() {
+    super();
     
-    // State initialization
-    this.state.apiKey = this.defaultApiKeyGetter();
-    this.state.apiKeyChanged = false;
-    
-    // UI Stuff
-    Interface.initializeTextInput(
-      '#openai-api-key',
-      this.apiKeyHandler.bind(this),
-      this.defaultApiKeyGetter.bind(this)
-    );
-    
-    // Note that initializeTextInput does not call the setter by default.
-    this.addToggleVisibilityButton();
+    const template = document.querySelector('#key-manager-template');
+    const templateContent = template.content;
+  
+    // Create shadow DOM and append template
+    this.attachShadow({ mode: 'open' });
+  
+    this.shadowRoot.appendChild(templateContent.cloneNode(true));
   }
   
-  addToggleVisibilityButton () {
-    const togglePasswordVisibility = () => {
-      const apiKeyInput = document.querySelector('input#openai-api-key');
-      if (apiKeyInput.type === 'text') {
-        apiKeyInput.type = 'password';
-      } else {
-        apiKeyInput.type = 'text';
-      }
-    };
+  connectedCallback () {
+    this.key = this.getAttribute('key');
     
-    const toggleButton = document.querySelector('#toggle-openai-key-visibility');
-    toggleButton.addEventListener('click', togglePasswordVisibility);
+    this.label = this.shadowRoot.querySelector('.form label');
+    this.label.textContent = this.textContent;
+    
+    this.apiKeyInput = this.shadowRoot.querySelector('.form input');
+    
+    this.toggleButton = this.shadowRoot.querySelector('.form button');
+    this.toggleButton.addEventListener('click', this.togglePasswordVisibility.bind(this));
   }
   
-  apiKeyHandler (value, event) {
-    this.state.apiKey = value;
-    this.state.apiKeyChanged = true;
-    localStorage.setItem('funkify-openai-api-key', this.state.apiKey);
+  initialize (getter, setter) {
+    this.getter = getter;
+    this.setter = setter;
+    
+    this.toggleButton.addEventListener('change', event => {
+      setter(element.value);
+    });
+    
+    this.apiKeyInput.value = this.getter();
   }
   
-  defaultApiKeyGetter () {
-    return localStorage.getItem('funkify-openai-api-key');
+  togglePasswordVisibility () {
+    if (this.apiKeyInput.type === 'text') {
+      this.apiKeyInput.type = 'password';
+    } else {
+      this.apiKeyInput.type = 'text';
+    }
   }
 }
+
+customElements.define('key-manager', KeyManager);
+
