@@ -9,6 +9,27 @@ import { v4 as uuidv4 } from 'uuid';
 import { marked } from 'marked';
 import _ from 'lodash';
 
+
+const rightArrow = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" width="100" height="50">
+  <!-- Arrow body -->
+  <line x1="0" y1="25" x2="90" y2="25" stroke="black" stroke-width="2"></line>
+  <line x1="90" y1="25" x2="90" y2="45" stroke="black" stroke-width="2"></line>
+  
+  <!-- Arrowhead -->
+  <line x1="90" y1="45" x2="100" y2="35" stroke="black" stroke-width="2"></line>
+  <line x1="90" y1="45" x2="80" y2="35" stroke="black" stroke-width="2"></line>
+</svg>`
+
+const leftArrow = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" width="100" height="50">
+  <!-- Arrow body -->
+  <line x1="0" y1="25" x2="90" y2="25" stroke="black" stroke-width="2"></line>
+  <line x1="90" y1="5" x2="90" y2="25" stroke="black" stroke-width="2"></line>
+  
+  <!-- Arrowhead -->
+  <line x1="0" y1="25" x2="10" y2="15" stroke="black" stroke-width="2"></line>
+  <line x1="0" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"></line>
+</svg>`
+
 class MessageItem extends HTMLElement {
   constructor() {
     super();
@@ -31,14 +52,27 @@ class MessageItem extends HTMLElement {
   
   updateContent (content) {
     const md = marked.parse(content);
-    this.left.innerHTML = md;
+    
+    if (this.role === "tool") {
+      const formattedContent = this.formatFunctionCallResponse(content);
+      const collapsible = document.createElement('collapsible-element');
+      collapsible.populate('Response', formattedContent);
+      
+      this.right.appendChild(collapsible);
+    } else {
+      this.left.innerHTML = md;
+    }
+  }
+  
+  get role () {
+    return this.message?.role;
   }
   
   setMessage (message, data=null) {
     this.message = message;
     this.messageData = data;
     
-    this.id = message?.id || ("message-" + uuidv4());
+    this.id = "message-" + uuidv4();
     this.classList.add(message.role);
     this.main.classList.add(message.role);
     
@@ -48,7 +82,7 @@ class MessageItem extends HTMLElement {
       const toolDiv = document.createElement('div');
       
       if (!_.isEmpty(data)) {
-        const renderedData = JSON.stringify(data);
+        const renderedData = JSON.stringify(data, null, 2);
         toolDiv.innerHTML = `<strong>ƒ ${message.name}</strong>(${renderedData})`;
       } else {
         toolDiv.innerHTML = `<strong>ƒ ${message.name}</strong>()`;
@@ -56,16 +90,30 @@ class MessageItem extends HTMLElement {
       
       this.right.appendChild(toolDiv);
       
-      const formattedContent = this.formatFunctionCallResponse(message.content);
-      const collapsible = document.createElement('collapsible-element');
-      collapsible.populate('Response', formattedContent);
+      if (message.content) {
+        const formattedContent = this.formatFunctionCallResponse(message.content);
+        const collapsible = document.createElement('collapsible-element');
+        collapsible.populate('Response', formattedContent);
+        
+        this.right.appendChild(collapsible);
+      }
       
-      this.right.appendChild(collapsible);
+      // Get the previous message-item element and if it's a user message, add an arrow.
+      if (this.previousSibling && this.previousSibling.role === "user") {
+        this.previousSibling.addFunctionArrow();
+      }
     } else {
       const messageContent = this.parseMessageContent(message);
-      const hasImages = !_.isEmpty(messageContent.imageUrls);
+      
+      // Check to see if the previous sibling is a tool call and this is an assistant.
+      // If so, add an arrow.
+      if (this.previousSibling && this.previousSibling.classList.contains('tool') && this.classList.contains('assistant')) {
+        this.addReturnArrow();
+      }
       
       const textPart = marked.parse(messageContent.text);
+      const hasImages = !_.isEmpty(messageContent.imageUrls);
+      
       if (hasImages) {
         let html = `<div>`;
         
@@ -93,12 +141,12 @@ class MessageItem extends HTMLElement {
       };
     } else {
       return {
-        text: message.content,
+        text: message.content || "",
         imageUrls: []
       };
     }
   }
-    
+  
   formatFunctionCallResponse (content) {
     if (_.isObject(content)) {
       
@@ -127,6 +175,14 @@ class MessageItem extends HTMLElement {
       const md = marked.parse(str);
       return `<pre>${md}</pre>`;
     }
+  }
+  
+  addFunctionArrow () {
+    this.right.innerHTML = rightArrow;
+  }
+  
+  addReturnArrow () {
+    this.right.innerHTML = leftArrow;
   }
 }
 

@@ -9,7 +9,7 @@ import './src/collapsible-element.js';
 import './src/message-item.js';
 
 import { State } from './src/state.js';
-import { ChatManager } from './src/chat-manager-new.js';
+import { ChatManager } from './src/chat-manager.js';
 import FunkifyChatDelegate from './src/funkify-chat-delegate.js';
 import { KeyManager } from './src/key-manager.js';
 import { PromptManager } from './src/prompt-manager.js';

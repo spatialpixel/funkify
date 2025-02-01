@@ -78,7 +78,7 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
   }
   
   updateMessageInList (id, content) {
-    this.state.messagesManager.updateMessageInList(id, content);
+    return this.state.messagesManager.updateMessageInList(id, content);
   }
   
   get supportsImages () {
@@ -100,7 +100,7 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
     }
   }
   
-  async createCompletion (...args) {
+  async createTextCompletion (...args) {
     const params = args[0];
     return await this.state.openai.chat.completions.create(params);
   }

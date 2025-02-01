@@ -68,6 +68,7 @@ export class ChatManagerDelegate {
   
   updateMessageInList (id, content) {
     // Update the UI representing the identified message.
+    // Should return the HTML element used to display the message.
   }
   
   get supportsImages () {
@@ -87,7 +88,7 @@ export class ChatManagerDelegate {
   }
   
   // Creates a completion object.
-  createCompletion (...args) {
+  createTextCompletion (...args) {
     throw new Error('required method')
   }
   
