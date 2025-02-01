@@ -9,29 +9,14 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
     this.state.messages = [];
     
     this.systemContextInput = document.querySelector('textarea#system-context');
-    
-    this.modelPicker = document.querySelector('select#model-picker');
-    this.modelPicker.value = this.state.service.models[0];
-    this.modelPicker.addEventListener('change', this.onModelSelect.bind(this));
-    
-    this.visionDetailPicker = document.querySelector('select#vision-detail');
-    this.visionDetailPicker.value = "low";
   }
-  
-  onModelSelect (event) {
-    if (this.isVisionModel) {
-      this.visionDetailPicker.removeAttribute('disabled');
-    } else {
-      this.visionDetailPicker.setAttribute('disabled', true);
-    }
-  }
-  
+
   get currentModel () {
-    return this.modelPicker.value;
+    return this.state.serviceManager.currentModel;
   }
   
   get visionDetail () {
-    return this.visionDetailPicker.value;
+    return this.state.serviceManager.visionDetail;
   }
   
   get systemContext () {

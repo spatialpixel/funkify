@@ -4,8 +4,8 @@ import OpenAI from 'openai';
 export default class OpenAIService extends LLMService {
   constructor (state) {
     super(state, 'openai');
-    // this.state
-    // this.serviceKey
+    // this.state = the app's state singleton
+    // this.serviceKey = a string like 'openai' or 'huggingface'
     
     this.keyManager = document.querySelector('key-manager#openai-api-key');
     this.keyManager.initialize(this.getter.bind(this), this.setter.bind(this));

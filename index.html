@@ -74,33 +74,7 @@
               
               <div style="flex-grow:2"></div>
               
-              <label>
-                Service
-                <select id="service-picker">
-                  <option value="openai">OpenAI</option>
-                  <option value="huggingface">Hugging Face</option>
-                </select>
-              </label>
-              
-              <label>
-              Model
-              <select id="model-picker">
-                <option value="gpt-4o">gpt-4o</option>
-                <option value="gpt-4o-mini">gpt-4o-mini</option>
-                <option value="gpt-4-turbo">gpt-4-turbo</option>
-                <option value="gpt-4">gpt-4</option>
-                <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-              </select>
-              </label>
-              
-              <label>
-                Vision
-                <select id="vision-detail" title="Selectable for models with vision capabilities.">
-                  <option value="low">low detail</option>
-                  <option value="high">high detail</option>
-                  <option value="auto">auto</option>
-                </select>
-              </label>
+              <service-manager default="openai"></service-manager>
             </div>
             
             <div class="column-6">
@@ -139,6 +113,52 @@
     </div>
     
     <tool-editor style="display:none;"></tool-editor>
+    
+    <template id="service-manager-template">
+      <style>
+      select {
+        font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+        padding: 3px 6px;
+        border-radius: 3px;
+        border: 2px solid var(--border-color);
+        background-color: var(--background-color);
+        outline: none;
+        color: var(--text-color);
+      }
+      select:hover {
+        background-color: var(--primary-color);
+      }
+      select[disabled] {
+        color: lightgray;
+        border-color: lightgray;
+      }
+      </style>
+      
+      <div>
+        <label>
+          Service
+          <select id="service-picker">
+            <option value="openai">OpenAI</option>
+            <option value="huggingface">Hugging Face</option>
+          </select>
+        </label>
+        
+        <label>
+          Model
+          <select id="model-picker">
+          </select>
+        </label>
+        
+        <label>
+          Vision
+          <select id="vision-detail" title="Selectable for models with vision capabilities.">
+            <option value="low">low detail</option>
+            <option value="high">high detail</option>
+            <option value="auto">auto</option>
+          </select>
+        </label>
+      </div>
+    </template>
     
     <template id="key-manager-template">
       <style scoped>
