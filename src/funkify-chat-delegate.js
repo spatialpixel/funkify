@@ -73,8 +73,8 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
     this.state.messages.push(message);
   }
   
-  addMessageToList (message, data=null) {
-    return this.state.messagesManager.addMessageToList(message, data);
+  renderMessage (message, data=null) {
+    return this.state.messagesManager.renderMessage(message, data);
   }
   
   updateMessageInList (id, content) {

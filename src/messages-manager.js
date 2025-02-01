@@ -16,7 +16,7 @@ export default class MessagesManager {
     this.scrollable = document.querySelector('.scrollable');
   }
   
-  addMessageToList (message, data=null) {
+  renderMessage (message, data=null) {
     const messageItem = document.createElement('message-item');
     this.messagesList.appendChild(messageItem);
     
@@ -35,7 +35,7 @@ export default class MessagesManager {
     let messageItem = document.querySelector(`#${id}`);
     if (!messageItem) {
       const pseudoMessage = { content, role: 'assistant' };
-      messageItem = this.addMessageToList(pseudoMessage);
+      messageItem = this.renderMessage(pseudoMessage);
     }
     
     messageItem.updateContent(content);

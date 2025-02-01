@@ -51,8 +51,8 @@ export class ChatManager {
     this.delegate.addMessage(message, id);
   }
   
-  addMessageToList (message, data=null) {
-    return this.delegate.addMessageToList(message, data);
+  renderMessage (message, data=null) {
+    return this.delegate.renderMessage(message, data);
   }
   
   get isVisionModel () {
@@ -172,7 +172,7 @@ export class ChatManager {
   
   prepareInitialMessageElement (userMessage) {
     if (userMessage) {
-      this.addMessageToList(userMessage);
+      this.renderMessage(userMessage);
       this.addMessage(userMessage);
     }
     
@@ -183,7 +183,7 @@ export class ChatManager {
       content: null
     };
     
-    const assistantElt = this.addMessageToList(pseudoMessage);
+    const assistantElt = this.renderMessage(pseudoMessage);
     return assistantElt.id;
   }
   
@@ -198,7 +198,7 @@ export class ChatManager {
         content: `An error occurred. ${err.name}. ${err.message}`,
       };
       
-      const errorElt = this.addMessageToList(errorMessage);
+      const errorElt = this.renderMessage(errorMessage);
       
       // As this isn't a real message from the assistant, we should probably ignore it.
       // this.addMessage(errorMessage);
@@ -328,7 +328,7 @@ export class ChatManager {
       
       // Add the message to the list in case we want to indicate the function call.
       // The delegate can ignore these.
-      functionElement = this.addMessageToList(functionResponseMessage, function_args);
+      functionElement = this.renderMessage(functionResponseMessage, function_args);
       
       // Perform the function call.
       function_result = await function_to_call.call(function_args, this.state);

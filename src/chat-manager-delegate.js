@@ -61,7 +61,7 @@ export class ChatManagerDelegate {
     return prompt;
   }
   
-  addMessageToList (message, data=null) {
+  renderMessage (message, data=null) {
     // Update the UI that shows the list of messages.
     // Should return the HTML element used to display the message.
   }
