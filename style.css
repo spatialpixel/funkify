@@ -255,10 +255,6 @@ textarea#prompt:focus {
   border-color: var(--border-color);
 }
 
-svg line {
-  stroke: var(--stroke-color);
-}
-
 /* From https://github.com/vineethtrv/css-loader */
 .loader {
   display: none;

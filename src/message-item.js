@@ -12,22 +12,22 @@ import _ from 'lodash';
 
 const rightArrow = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" width="100" height="50">
   <!-- Arrow body -->
-  <line x1="0" y1="25" x2="90" y2="25" stroke="black" stroke-width="2"></line>
-  <line x1="90" y1="25" x2="90" y2="45" stroke="black" stroke-width="2"></line>
+  <line x1="0" y1="25" x2="90" y2="25"></line>
+  <line x1="90" y1="25" x2="90" y2="45"></line>
   
   <!-- Arrowhead -->
-  <line x1="90" y1="45" x2="100" y2="35" stroke="black" stroke-width="2"></line>
-  <line x1="90" y1="45" x2="80" y2="35" stroke="black" stroke-width="2"></line>
+  <line x1="90" y1="45" x2="100" y2="35"></line>
+  <line x1="90" y1="45" x2="80" y2="35"></line>
 </svg>`
 
 const leftArrow = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" width="100" height="50">
   <!-- Arrow body -->
-  <line x1="0" y1="25" x2="90" y2="25" stroke="black" stroke-width="2"></line>
-  <line x1="90" y1="5" x2="90" y2="25" stroke="black" stroke-width="2"></line>
+  <line x1="0" y1="25" x2="90" y2="25"></line>
+  <line x1="90" y1="5" x2="90" y2="25"></line>
   
   <!-- Arrowhead -->
-  <line x1="0" y1="25" x2="10" y2="15" stroke="black" stroke-width="2"></line>
-  <line x1="0" y1="25" x2="10" y2="35" stroke="black" stroke-width="2"></line>
+  <line x1="0" y1="25" x2="10" y2="15"></line>
+  <line x1="0" y1="25" x2="10" y2="35"></line>
 </svg>`
 
 class MessageItem extends HTMLElement {
@@ -99,15 +99,19 @@ class MessageItem extends HTMLElement {
       }
       
       // Get the previous message-item element and if it's a user message, add an arrow.
-      if (this.previousSibling && this.previousSibling.role === "user") {
-        this.previousSibling.addFunctionArrow();
+      let previous = this.previousSibling
+      while (previous && previous.role !== 'user') {
+        previous = previous.previousSibling;
+      }
+      if (previous && previous.role === 'user') {
+        previous.addFunctionArrow();
       }
     } else {
       const messageContent = this.parseMessageContent(message);
       
       // Check to see if the previous sibling is a tool call and this is an assistant.
       // If so, add an arrow.
-      if (this.previousSibling && this.previousSibling.classList.contains('tool') && this.classList.contains('assistant')) {
+      if (this.previousSibling && this.previousSibling.role === 'tool' && this.role === 'assistant') {
         this.addReturnArrow();
       }
       

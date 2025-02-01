@@ -161,7 +161,7 @@ export class ChatManager {
         content,
       };
       
-      this.addMessage(message, messageElementId);
+      this.addMessage(message);
     } else {
       await this.processToolCalls(tool_calls);
       
@@ -171,30 +171,20 @@ export class ChatManager {
   } // end submitMessage
   
   prepareInitialMessageElement (userMessage) {
-    let messageElementId = "message-" + uuidv4();
-    
     if (userMessage) {
-      const messageElt = this.addMessageToList(userMessage);
-      messageElementId = messageElt.id;
+      this.addMessageToList(userMessage);
       this.addMessage(userMessage);
-    } else {
-      // If there is no user message, this is likely the response to a tool_call.
-      // Let's put in a hook to allow for delegates to handle this case.
-      const lastMessageRole = _.chain(this.messages).last().get('role').value();
-      
-      if (lastMessageRole === 'tool') {
-        // All this does is pre-emptively create the message we would have created anyway.
-        const pseudoMessage = {
-          role: 'assistant',
-          content: null
-        };
-        
-        const assistantElt = this.addMessageToList(pseudoMessage);
-        messageElementId = assistantElt.id;
-      }
     }
     
-    return messageElementId;
+    // TODO Add an assistant message-item after every submitted message?
+    // This is needed after user → assistant and tool → assistant, but not user → tool.
+    const pseudoMessage = {
+      role: 'assistant',
+      content: null
+    };
+    
+    const assistantElt = this.addMessageToList(pseudoMessage);
+    return assistantElt.id;
   }
   
   async prepareCompletionInstance () {
@@ -218,11 +208,11 @@ export class ChatManager {
     }
   }
   
-  async processCompletion (completion, messageElementId) {
+  async processCompletion (completion, targetElementId) {
     if (!this.stream) {
-      return this.processNonStreamingCompletion(completion, messageElementId);
+      return this.processNonStreamingCompletion(completion, targetElementId);
     } else {
-      return await this.processStreamingCompletion(completion, messageElementId);
+      return await this.processStreamingCompletion(completion, targetElementId);
     }
   }
   
