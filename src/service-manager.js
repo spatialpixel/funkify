@@ -26,12 +26,14 @@ class ServiceManager extends HTMLElement {
     this.modelPicker = this.shadowRoot.querySelector('select#model-picker');
     this.modelPicker.addEventListener('change', this.onModelSelect.bind(this));
     
+    this.manualModelEntry = this.shadowRoot.querySelector('#manual-model-entry');
+    this.manualModelEntryInput = this.shadowRoot.querySelector('#manual-model-entry input');
+    this.manualModelEntryInput.addEventListener('change', this.onManualEntry.bind(this));
+    this.manualEntryCancel = this.shadowRoot.querySelector('#manual-model-entry button');
+    this.manualEntryCancel.addEventListener('click', this.hideManualEntry.bind(this));
+    
     this.visionDetailPicker = this.shadowRoot.querySelector('select#vision-detail');
     this.visionDetailPicker.value = "low";
-  }
-  
-  get service () {
-    return this.state.service;
   }
   
   initialize (state) {
@@ -48,16 +50,28 @@ class ServiceManager extends HTMLElement {
     this.modelPicker.value = this.state.service.models[0];
   }
   
+  get service () {
+    return this.state.service;
+  }
+  
   get serviceKey () {
     return this.servicePicker.value;
   }
   
   get currentModel () {
-    return this.modelPicker.value;
+    if (this.manualModelEntry.style.display !== "none") {
+      return this.manualModelEntryInput.value;
+    } else {
+      return this.modelPicker.value;
+    }
   }
   
   get visionDetail () {
-    return this.visionDetailPicker;
+    return this.visionDetailPicker.value;
+  }
+    
+  get currentModelSupportsVision () {
+    return this.service.modelSupportsVision(this.currentModel);
   }
   
   populateModels () {
@@ -70,20 +84,53 @@ class ServiceManager extends HTMLElement {
       this.modelPicker.appendChild(modelOption);
     });
     
+    const other = document.createElement('option');
+    other.value = 'other';
+    other.textContent = "Other…";
+    this.modelPicker.appendChild(other);
+    
     this.onModelSelect();
   }
   
   onServiceSelect (event) {
     this.state.service = this.state.services[this.serviceKey];
+    
     this.populateModels();
+    
+    // When picking a new service, should probably reset the manual entry field too.
+    this.hideManualEntry();
   }
   
   onModelSelect (event) {
-    if (this.service.modelSupportsVision(this.currentModel)) {
+    if (this.manualModelEntry.style.display === 'none' && this.currentModel === 'other') {
+      this.showManualModelEntryInput();
+    }
+    
+    if (this.currentModelSupportsVision) {
       this.visionDetailPicker.removeAttribute('disabled');
     } else {
       this.visionDetailPicker.setAttribute('disabled', true);
     }
+  }
+  
+  hideManualEntry () {
+    this.manualModelEntryInput.value = '';
+    this.manualModelEntry.style.display = 'none';
+    this.modelPicker.style.display = 'initial';
+    
+    this.modelPicker.value = this.service.models[0];
+  }
+  
+  showManualModelEntryInput () {
+    this.modelPicker.style.display = 'none';
+    
+    // Then show the new entry.
+    this.manualModelEntry.style.display = 'inline-block';
+    this.manualModelEntryInput.focus();
+  }
+  
+  onManualEntry (event) {
+    
   }
 }
 

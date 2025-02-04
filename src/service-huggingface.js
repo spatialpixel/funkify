@@ -34,11 +34,17 @@ export default class HuggingFaceService extends LLMService {
       
       // tool_calls should have content: "", HACK to ignore "tools" once the call is done.
       'Qwen/Qwen2.5-72B-Instruct',
+      
+      // when images are present, need to ignore "tools"
+      'meta-llama/Llama-3.2-11B-Vision-Instruct',
+      
+      // Works similarly to the above models. Commented out as a manual-entry example.
+      // "NousResearch/Hermes-3-Llama-3.1-8B",
     ]
   }
   
   modelSupportsVision (model) {
-    const modelsWithVision = [];
+    const modelsWithVision = ['meta-llama/Llama-3.2-11B-Vision-Instruct'];
     return modelsWithVision.includes(model);
   }
   

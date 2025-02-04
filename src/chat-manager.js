@@ -60,8 +60,7 @@ export class ChatManager {
   }
   
   get isVisionModel () {
-    const modelsWithVision = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'];
-    return modelsWithVision.includes(this.currentModel);
+    return this.state.serviceManager.currentModelSupportsVision;
   }
   
   initializeLLMService () {
@@ -114,37 +113,34 @@ export class ChatManager {
   getUserMessageContent (prompt) {
     const sanitizedPrompt = this.delegate.sanitizeUserPrompt(prompt);
     
-    if (!this.supportsImages) { return sanitizedPrompt; }
+    if (!this.supportsImages || !this.isVisionModel) { return sanitizedPrompt; }
     
     const imageUrls = this.detectImageUrls(sanitizedPrompt);
     const hasImageUrls = !_.isEmpty(imageUrls);
+    if (!hasImageUrls) { return sanitizedPrompt; }
     
-    if (hasImageUrls && this.isVisionModel) {
-      console.debug('Detected urls:', imageUrls);
+    console.debug('Detected urls:', imageUrls);
+    
+    // Create the return value.
+    const content = [
+      { type: "text", text: sanitizedPrompt }
+    ];
+    
+    // For each image URL, add a part to the content.
+    // https://platform.openai.com/docs/guides/vision
+    imageUrls.forEach(url => {
+      const part = {
+        type: "image_url",
+        image_url: {
+          url: url,
+          detail: this.visionDetail,
+        }
+      };
       
-      // Create the return value.
-      const content = [
-        { type: "text", text: sanitizedPrompt }
-      ];
-      
-      // For each image URL, add a part to the content.
-      // https://platform.openai.com/docs/guides/vision
-      imageUrls.forEach(url => {
-        const part = {
-          type: "image_url",
-          image_url: {
-            url: url,
-            detail: this.visionDetail,
-          }
-        };
-        
-        content.push(part);
-      });
-      
-      return content;
-    } else {
-      return sanitizedPrompt;
-    }
+      content.push(part);
+    });
+    
+    return content;
   }
   
   // Submit a fully qualified message object to the chat manager.
@@ -152,15 +148,23 @@ export class ChatManager {
   async submitMessage (userMessage, includeTools=true) {
     this.initializeLLMService();
     
+    // Display the model we're using?
+    if (userMessage) {
+      this.showModelAndParameters();
+    }
+    
     let messageElementId = this.prepareInitialMessageElement(userMessage);
     
     const params = this.params;
     
-    // HACK For OpenAI, the 'tools' field can always be specified, but not for HuggingFace, which causes an infinite loop.
+    // HACK For OpenAI, the 'tools' field can always be specified,
+    // but the HuggingFace inference API is a bit buggy. Sometimes 'tools' must be omitted.
+    // TODO Express this need to modify parameters through the delegate?
     if (!includeTools) {
       delete params['tools'];
     }
     
+    console.debug('Parameters for completion:', params);
     const completion = await this.prepareCompletionInstance(params);
     if (!completion) { return; }
     
@@ -194,6 +198,15 @@ export class ChatManager {
     
     const assistantElt = this.renderMessage(pseudoMessage);
     return assistantElt.id;
+  }
+  
+  showModelAndParameters () {
+    const pseudoMessage = {
+      role: 'meta',
+      content: `Model: ${this.delegate.currentModel}`
+    };
+    
+    this.renderMessage(pseudoMessage);
   }
   
   async prepareCompletionInstance (params) {
@@ -266,6 +279,7 @@ export class ChatManager {
       
       // Any expected top-level keys in delta should be copied or appended.
       setTopLevel(message, delta, 'name');
+      setTopLevel(message, delta, 'role');
       setTopLevel(message, delta, 'refusal');
       setTopLevel(message, delta, 'content');
 
@@ -319,6 +333,10 @@ export class ChatManager {
       }
     } // end chunk completion loop
     
+    // if (!_.has(message, 'role')) {
+    //   message.role = "assistant";
+    // }
+    
     return message;
   }
   
@@ -348,7 +366,7 @@ export class ChatManager {
     // Package the result of the function call as a message object.
     const functionResponseMessage = {
       tool_call_id: tool_call.id,
-      role: 'tool',
+      role: 'tool', // required
       name: function_name,
     };
     

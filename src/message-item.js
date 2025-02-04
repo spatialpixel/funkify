@@ -72,7 +72,10 @@ class MessageItem extends HTMLElement {
     this.message = message;
     this.messageData = data;
     
+    // Every rendered message should have a unique id.
     this.id = "message-" + uuidv4();
+    
+    // Reflect the "role" of the message. (system, user, assistant, tool)
     this.classList.add(message.role);
     this.main.classList.add(message.role);
     
