@@ -68,7 +68,7 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
   }
   
   get stream () {
-    return true;
+    return this.state.service.stream;
   }
   
   initializeLLMService () {
@@ -77,5 +77,13 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
   
   async createTextCompletion (params) {
     return this.state.service.createTextCompletion(params);
+  }
+  
+  preprocessMessage (message) {
+    this.state.service.preprocessMessage(message);
+  }
+  
+  get includeToolsAfterFunctionCalls () {
+    return this.state.service.includeToolsAfterFunctionCalls;
   }
 }

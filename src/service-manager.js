@@ -1,5 +1,8 @@
 import OpenAIService from './service-openai.js';
+import HuggingFaceService from './service-huggingface.js';
+
 import _ from 'lodash';
+
 
 class ServiceManager extends HTMLElement {
   constructor() {
@@ -34,9 +37,12 @@ class ServiceManager extends HTMLElement {
   initialize (state) {
     this.state = state;
     
-    if (this.defaultService === 'openai') {
-      this.state.service = new OpenAIService(state);
-    }
+    this.state.services = {
+      openai: new OpenAIService(state),
+      huggingface: new HuggingFaceService(state)
+    };
+    
+    this.onServiceSelect();
     
     this.populateModels();
     this.modelPicker.value = this.state.service.models[0];
@@ -55,18 +61,21 @@ class ServiceManager extends HTMLElement {
   }
   
   populateModels () {
+    this.modelPicker.innerHTML = '';
+    
     _.forEach(this.service.models, model => {
       const modelOption = document.createElement('option');
       modelOption.value = model;
       modelOption.textContent = model;
       this.modelPicker.appendChild(modelOption);
     });
+    
+    this.onModelSelect();
   }
   
   onServiceSelect (event) {
-    if (this.serviceKey === 'openai') {
-      this.state.service = new OpenAIService(state);
-    }
+    this.state.service = this.state.services[this.serviceKey];
+    this.populateModels();
   }
   
   onModelSelect (event) {

@@ -92,15 +92,11 @@ export class ChatManagerDelegate {
     throw new Error('required method')
   }
   
-  onStart () {
+  preprocessMessage (message) {
     
   }
   
-  onEnd () {
-    
-  }
-  
-  onError () {
-    
+  get includeToolsAfterFunctionCalls () {
+    return true;
   }
 }

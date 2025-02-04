@@ -47,6 +47,10 @@ export class ChatManager {
     return this.delegate.stream;
   }
   
+  get service () {
+    return this.state.service;
+  }
+  
   addMessage (message, id) {
     this.delegate.addMessage(message, id);
   }
@@ -145,28 +149,33 @@ export class ChatManager {
   
   // Submit a fully qualified message object to the chat manager.
   // For OpenAI, these are typically in the form of: { role: 'user', content: '' }
-  async submitMessage (userMessage) {
+  async submitMessage (userMessage, includeTools=true) {
     this.initializeLLMService();
     
     let messageElementId = this.prepareInitialMessageElement(userMessage);
     
-    const completion = await this.prepareCompletionInstance();
+    const params = this.params;
+    
+    // HACK For OpenAI, the 'tools' field can always be specified, but not for HuggingFace, which causes an infinite loop.
+    if (!includeTools) {
+      delete params['tools'];
+    }
+    
+    const completion = await this.prepareCompletionInstance(params);
     if (!completion) { return; }
     
-    let { content, tool_calls } = await this.processCompletion(completion, messageElementId);
+    const message = await this.processCompletion(completion, messageElementId);
+    this.addMessage(message);
     
-    if (_.isEmpty(tool_calls)) {
-      const message = {
-        role: 'assistant',
-        content,
-      };
+    if (!_.isEmpty(message.tool_calls)) {
+      // Calls all the functions needed to ensure we have the info for the final completion.
+      await this.processToolCalls(message);
       
-      this.addMessage(message);
-    } else {
-      await this.processToolCalls(tool_calls);
+      // HACK For OpenAI, the 'tools' field can always be specified, but not for HuggingFace, which causes an infinite loop.
+      const includeTools = this.delegate.includeToolsAfterFunctionCalls;
       
-      // TODO Handle this recursively for now. Put this in a loop instead?
-      await this.submitMessage(null);
+      // TODO Handle this recursively for now. Put this in a loop or a queue instead?
+      await this.submitMessage(null, includeTools);
     }
   } // end submitMessage
   
@@ -187,10 +196,10 @@ export class ChatManager {
     return assistantElt.id;
   }
   
-  async prepareCompletionInstance () {
+  async prepareCompletionInstance (params) {
     try {
       // Submit the completion request to the LLM service.
-      return await this.delegate.createTextCompletion(this.params);
+      return await this.delegate.createTextCompletion(params);
     } catch (err) {
       // TODO Is this really the right behavior during the instantiation of the completion object?
       const errorMessage = {
@@ -219,19 +228,32 @@ export class ChatManager {
   processNonStreamingCompletion (completion, messageElementId) {
     const message = completion.choices[0].message;
     
-    if (_.isEmpty(tool_calls)) {
+    if (_.isEmpty(message.tool_calls)) {
       this.delegate.updateMessageInList(messageElementId, message.content);
     }
     
-    return {
-      content: message.content,
-      tool_calls: message.tool_calls
-    };
+    this.delegate.preprocessMessage(message);
+    
+    return message;
   }
   
   async processStreamingCompletion (completion, messageElementId) {
-    let content = '';
-    let tool_calls = [];
+    const message = {};
+    
+    const setTopLevel = (message, delta, key) => {
+      if (_.has(delta, key) && !_.has(message, key)) {
+        // If the message doesn't have the key, set the initial value.
+        // E.g. This also takes care of cases in which the desired value is null.
+        message[key] = delta[key];
+      } else if (_.isString(delta[key])) {
+        // For strings, concat them to the current value.
+        if (!_.isString(message[key])) {
+          // Maybe we had an undefined or null value before, so reset it.
+          message[key] = '';
+        }
+        message[key] += delta[key];
+      }
+    };
     
     // Process the streaming, if streaming was indicated.
     for await (const chunk of completion) {
@@ -242,64 +264,66 @@ export class ChatManager {
       // When streaming, there is a "delta" object instead of a "message" object.
       const delta = choice.delta;
       
+      // Any expected top-level keys in delta should be copied or appended.
+      setTopLevel(message, delta, 'name');
+      setTopLevel(message, delta, 'refusal');
+      setTopLevel(message, delta, 'content');
+
       // We can cue tool_calls from the 'delta' field.
-      if (!delta.content && _.isArray(delta.tool_calls)) {
+      if (_.isArray(delta.tool_calls)) {
+        if (!_.isArray(message.tool_calls)) {
+          message.tool_calls = [];
+        }
         
         // delta.tool_calls will be an array that has also chunks we need to combine.
         for (const tool_call of delta.tool_calls) {
           const index = tool_call.index;
           
           // Populate the target tool_call object.
-          if (_.isEmpty(tool_calls[index])) {
-            tool_calls[index] = {
+          if (_.isEmpty(message.tool_calls[index])) {
+            message.tool_calls[index] = {
               type: "function",
               function: {
                 name: '',
                 arguments: '',
               },
-              id: null,
+              id: '',
             };
           }
           
           // Populate the tool_call fields based on what we have in this current chunk.
+          
           if (!_.isEmpty(tool_call.id)) {
-            tool_calls[index].id = tool_call.id;
+            // Tool call IDs don't seem to be chunked, so I think we can just set it if empty.
+            message.tool_calls[index].id = tool_call.id;
           }
+          
           if (!_.isEmpty(tool_call.function.name)) {
-            tool_calls[index].function.name += tool_call.function.name;
+            message.tool_calls[index].function.name += tool_call.function.name;
           }
+          
           if (!_.isEmpty(tool_call.function.arguments)) {
-            tool_calls[index].function.arguments += tool_call.function.arguments;
+            message.tool_calls[index].function.arguments += tool_call.function.arguments;
           }
         }
-      } else if (delta.content) {
-        content += delta.content;
-        
-        const elt = this.delegate.updateMessageInList(messageElementId, content);
+      }
+      
+      if (_.isString(delta.content)) {
+        // If we have an update to the content field, then we should render it.
+        const elt = this.delegate.updateMessageInList(messageElementId, message.content);
         if (elt.id !== messageElementId) {
-          // This shouldn't happen, but if it does, let's ensure we have a real element to work with
-          // on subsequent calls.
+          // This shouldn't happen, but if it does, let's ensure we have a real element.
           console.warn(`Attempted to find element id = ${messageElementId} but didn't find it. Creating a new one with ${elt.id}`);
           messageElementId = elt.id;
         }
-      } else {
-        console.warn(`Got a streaming completion chunk with no content and no tool_calls?`, delta);
       }
     } // end chunk completion loop
     
-    return { content, tool_calls };
+    return message;
   }
   
-  async processToolCalls (tool_calls) {
-    const toolCallsMessage = {
-      role: 'assistant',
-      content: null,
-      tool_calls
-    };
-    
-    this.addMessage(toolCallsMessage);
-    
-    for await (const tool_call of tool_calls) {
+  async processToolCalls (message) {
+    for await (const tool_call of message.tool_calls) {
       const functionResponseMessage = await this.processToolCall(tool_call);
       this.addMessage(functionResponseMessage);
     }
@@ -307,7 +331,18 @@ export class ChatManager {
   
   async processToolCall (tool_call) {
     const function_name = tool_call.function.name;
-    const function_args = JSON.parse(tool_call.function.arguments);
+    
+    let function_args
+    try {
+      if (_.isString(tool_call.function.arguments)) {
+        function_args = JSON.parse(tool_call.function.arguments);
+      } else if (_.isObject(tool_call.function.arguments)) {
+        function_args = tool_call.function.arguments;
+      }
+    } catch (err) {
+      console.error(err, tool_call.function.arguments);
+    }
+    
     const function_to_call = _.find(this.delegate.functions, t => t.name === function_name);
     
     // Package the result of the function call as a message object.

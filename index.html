@@ -35,6 +35,12 @@
             </li>
             
             <li>
+              <key-manager id="huggingface-api-key" key="huggingface-api-key">
+                Hugging Face API Key
+              </key-manager>
+            </li>
+            
+            <li>
               <p class="small">
                 Note that this isn't best practice to enter an API key into a web app
                 like this. While it is only stored in your browser, this means a malicious
@@ -132,11 +138,13 @@
         color: lightgray;
         border-color: lightgray;
       }
+      #model-picker {
+        max-width: 200px;
+      }
       </style>
       
       <div>
         <label>
-          Service
           <select id="service-picker">
             <option value="openai">OpenAI</option>
             <option value="huggingface">Hugging Face</option>
@@ -145,15 +153,14 @@
         
         <label>
           Model
-          <select id="model-picker">
-          </select>
+          <select id="model-picker"></select>
         </label>
         
         <label>
           Vision
-          <select id="vision-detail" title="Selectable for models with vision capabilities.">
-            <option value="low">low detail</option>
-            <option value="high">high detail</option>
+          <select id="vision-detail" title="Vision detail. Selectable for models with vision capabilities.">
+            <option value="low">low</option>
+            <option value="high">high</option>
             <option value="auto">auto</option>
           </select>
         </label>

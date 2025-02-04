@@ -3,21 +3,15 @@ export default class LLMService {
     this.state = state;
     this.serviceKey = serviceKey;
     
-    // Creates a namespace for all services.
-    if (!('services' in this.state)) {
-      this.state.services = {};
-    }
-    
-    this.state.services[this.serviceKey] = {
-      apiKey: null,
-      apiKeyChanged: false,
-      instance: null
-    };
+    this.apiKey = null;
+    this.apiKeyChanged = false;
+    this.instance = null;
     
     this.apiKey = this.state.storage.getItem(`funkify-${this.serviceKey}-api-key`);
   }
   
-  // Called at the start of every completion.
+  // Called at the start of every completion. Should ensure there is an instance
+  // of the current service instantiated, typically with an API key.
   initialize () {
     
   }
@@ -34,7 +28,6 @@ export default class LLMService {
     return false;
   }
   
-  
   getter () {
     return this.apiKey;
   }
@@ -42,30 +35,18 @@ export default class LLMService {
   setter (value) {
     this.apiKey = value;
     this.apiKeyChanged = true;
-    this.state.storage.setItem('funkify-openai-api-key', this.apiKey);
+    this.state.storage.setItem(`funkify-${this.serviceKey}-api-key`, this.apiKey);
   }
   
-  get instance () {
-    return this.state.services[this.serviceKey].instance;
+  get stream () {
+    return true;
   }
   
-  set instance (value) {
-    this.state.services[this.serviceKey].instance = value;
+  preprocessMessage (message) {
+    
   }
   
-  get apiKey () {
-    return this.state.services[this.serviceKey].apiKey;
-  }
-  
-  set apiKey (value) {
-    this.state.services[this.serviceKey].apiKey = value;
-  }
-  
-  get apiKeyChanged () {
-    return this.state.services[this.serviceKey].apiKeyChanged;
-  }
-  
-  set apiKeyChanged (value) {
-    return this.state.services[this.serviceKey].apiKeyChanged = value;
+  get includeToolsAfterFunctionCalls () {
+    return true;
   }
 }

@@ -7,7 +7,7 @@ export default class OpenAIService extends LLMService {
     // this.state = the app's state singleton
     // this.serviceKey = a string like 'openai' or 'huggingface'
     
-    this.keyManager = document.querySelector('key-manager#openai-api-key');
+    this.keyManager = document.querySelector(`key-manager#${this.serviceKey}-api-key`);
     this.keyManager.initialize(this.getter.bind(this), this.setter.bind(this));
   }
   
@@ -36,7 +36,7 @@ export default class OpenAIService extends LLMService {
     ]
   }
   
-  modelSupportVision (model) {
+  modelSupportsVision (model) {
     const modelsWithVision = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4']; // gpt-3.5-turbo??
     return modelsWithVision.includes(model);
   }

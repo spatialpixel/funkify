@@ -29,8 +29,8 @@ class KeyManager extends HTMLElement {
     this.getter = getter;
     this.setter = setter;
     
-    this.toggleButton.addEventListener('change', event => {
-      setter(element.value);
+    this.apiKeyInput.addEventListener('change', event => {
+      this.setter(this.apiKeyInput.value);
     });
     
     this.apiKeyInput.value = this.getter();
