@@ -108,7 +108,7 @@ class ToolsList extends HTMLElement {
   }
   
   // Refresh to sync up state.tools with the list of tool-items.
-  // TODO Remove any tool-items not found in state.tools.
+  // TODO: Remove any tool-items not found in state.tools.
   refresh () {
     for (const tool of this.tools) {
       let toolItem = this.shadowRoot.querySelector(`#${tool.id}`);

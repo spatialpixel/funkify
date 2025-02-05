@@ -42,7 +42,7 @@ ${ this.f }
         openai: state.openai
       };
       
-      // TODO "args" is deprecated, but included here until the tutorials are updated.
+      // TODO: "args" is deprecated, but included here until the tutorials are updated.
       const argKeys = ['args', 'globals'];
       const argValues = [args, globals];
       

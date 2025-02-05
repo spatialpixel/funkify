@@ -42,11 +42,11 @@ export default class LLMService {
     return true;
   }
   
-  preprocessMessage (message) {
+  processAssistantMessage (message) {
     
   }
   
-  get includeToolsAfterFunctionCalls () {
-    return true;
+  processToolCallsMessage (message) {
+    
   }
 }

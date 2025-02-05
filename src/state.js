@@ -11,7 +11,7 @@ export class State {
       set: (target, key, value) => {
         //console.debug(`Setting property '${key}' to '${value}'`);
         
-        // TODO To be used later.
+        // TODO: To be used later.
         // Send a change event.
         const customEvent = new CustomEvent('StateUpdate', {
           detail: {

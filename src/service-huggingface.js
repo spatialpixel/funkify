@@ -22,17 +22,42 @@ export default class HuggingFaceService extends LLMService {
     }
   }
   
+  preprocessParams (params) {
+    const isImageMessage = message => {
+      const gotAnArray = _.isArray(lastMessage.content);
+      if (!gotAnArray) { return false; }
+      const imageUrls = _.filter(lastMessage.content, msg => msg.type === "image_url");
+      return _.size(imageUrls) > 0;
+    };
+    
+    const isToolMessage = message => message.role === 'tool';
+    
+    const lastMessage = _.last(params.messages);
+    
+    // TODO: Check that all tool calls were satisfied.
+    
+    // There are two bugs in HuggingFace Inference API. Tool calls only resolve if there is no
+    // 'tools' field, and image messages seem to trigger tools even if the inference doesn't work.
+    if (isToolMessage(lastMessage) || isImageMessage(lastMessage)) {
+      delete params["tools"]
+    }
+  }
+  
   async createTextCompletion (params) {
+    this.preprocessParams(params);
+    
+    console.debug(`huggingface completion params:`, params);
+    
     // return await this.instance.chatCompletionStream(params);
     return await this.instance.chatCompletion(params);
   }
   
   get models () {
     return [
-      // tool_calls should have content: "", HACK to ignore "tools" once the call is done.
+      // tool_calls should have content: "", HACK: to ignore "tools" once the call is done.
       'meta-llama/Meta-Llama-3-8B-Instruct',
       
-      // tool_calls should have content: "", HACK to ignore "tools" once the call is done.
+      // tool_calls should have content: "", HACK: to ignore "tools" once the call is done.
       'Qwen/Qwen2.5-72B-Instruct',
       
       // when images are present, need to ignore "tools"
@@ -52,7 +77,9 @@ export default class HuggingFaceService extends LLMService {
     return false;
   }
   
-  preprocessMessage (message) {
+  processToolCallsMessage (message) {
+    if (!_.isObject(message)) { return }
+    
     if (_.isArray(message.tool_calls)) {
       // The tool_calls message needs a "content": "" field, which HF requires but omits.
       message.content = "";
@@ -67,11 +94,7 @@ export default class HuggingFaceService extends LLMService {
         }
       });
       
-      // TODO track tool IDs and ensure all tool calls have been satisfied.
+      // TODO: track tool IDs and ensure all tool calls have been satisfied.
     }
-  }
-  
-  get includeToolsAfterFunctionCalls () {
-    return false;
   }
 }

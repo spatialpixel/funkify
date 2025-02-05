@@ -145,42 +145,39 @@ export class ChatManager {
   
   // Submit a fully qualified message object to the chat manager.
   // For OpenAI, these are typically in the form of: { role: 'user', content: '' }
-  async submitMessage (userMessage, includeTools=true) {
+  async submitMessage (userMessage) {
     this.initializeLLMService();
     
-    // Display the model we're using?
+    // Display the model and other parameters we're using for this chat.
     if (userMessage) {
       this.showModelAndParameters();
     }
     
+    // Creates an HTML element to receive the streaming tokens, if any.
     let messageElementId = this.prepareInitialMessageElement(userMessage);
     
-    const params = this.params;
-    
-    // HACK For OpenAI, the 'tools' field can always be specified,
-    // but the HuggingFace inference API is a bit buggy. Sometimes 'tools' must be omitted.
-    // TODO Express this need to modify parameters through the delegate?
-    if (!includeTools) {
-      delete params['tools'];
-    }
-    
-    console.debug('Parameters for completion:', params);
-    const completion = await this.prepareCompletionInstance(params);
+    const completion = await this.prepareCompletionInstance(this.params);
     if (!completion) { return; }
     
-    const message = await this.processCompletion(completion, messageElementId);
-    this.addMessage(message);
+    const responseMessage = await this.processCompletion(completion, messageElementId);
     
-    if (!_.isEmpty(message.tool_calls)) {
-      // Calls all the functions needed to ensure we have the info for the final completion.
-      await this.processToolCalls(message);
-      
-      // HACK For OpenAI, the 'tools' field can always be specified, but not for HuggingFace, which causes an infinite loop.
-      const includeTools = this.delegate.includeToolsAfterFunctionCalls;
-      
-      // TODO Handle this recursively for now. Put this in a loop or a queue instead?
-      await this.submitMessage(null, includeTools);
+    this.delegate.processAssistantMessage(responseMessage);
+    
+    this.addMessage(responseMessage);
+    
+    const isToolCallsMessage = !_.isEmpty(responseMessage.tool_calls);
+    if (!isToolCallsMessage) { return; }
+    
+    this.delegate.processToolCallsMessage(responseMessage);
+    
+    // Calls all the functions needed to ensure we have the info for the final completion.
+    const functionResponseMessages = await this.processToolCalls(responseMessage);
+    for (const functionResponseMessage of functionResponseMessages) {
+      this.addMessage(functionResponseMessage);
     }
+    
+    // TODO: Handle this recursively for now. Put this in a loop or a queue instead?
+    await this.submitMessage(null);
   } // end submitMessage
   
   prepareInitialMessageElement (userMessage) {
@@ -189,7 +186,7 @@ export class ChatManager {
       this.addMessage(userMessage);
     }
     
-    // TODO Add an assistant message-item after every submitted message?
+    // TODO: Add an assistant message-item after every submitted message?
     // This is needed after user → assistant and tool → assistant, but not user → tool.
     const pseudoMessage = {
       role: 'assistant',
@@ -214,16 +211,12 @@ export class ChatManager {
       // Submit the completion request to the LLM service.
       return await this.delegate.createTextCompletion(params);
     } catch (err) {
-      // TODO Is this really the right behavior during the instantiation of the completion object?
       const errorMessage = {
         role: 'assistant',
         content: `An error occurred. ${err.name}. ${err.message}`,
       };
       
-      const errorElt = this.renderMessage(errorMessage);
-      
-      // As this isn't a real message from the assistant, we should probably ignore it.
-      // this.addMessage(errorMessage);
+      this.renderMessage(errorMessage);
       
       console.error(`An error occurred while creating the completion object:`, err);
       return null;
@@ -239,15 +232,13 @@ export class ChatManager {
   }
   
   processNonStreamingCompletion (completion, messageElementId) {
-    const message = completion.choices[0].message;
+    const responseMessage = completion.choices[0].message;
     
-    if (_.isEmpty(message.tool_calls)) {
-      this.delegate.updateMessageInList(messageElementId, message.content);
+    if (_.isEmpty(responseMessage.tool_calls)) {
+      this.delegate.updateMessageInList(messageElementId, responseMessage.content);
     }
     
-    this.delegate.preprocessMessage(message);
-    
-    return message;
+    return responseMessage;
   }
   
   async processStreamingCompletion (completion, messageElementId) {
@@ -333,18 +324,16 @@ export class ChatManager {
       }
     } // end chunk completion loop
     
-    // if (!_.has(message, 'role')) {
-    //   message.role = "assistant";
-    // }
-    
     return message;
   }
   
   async processToolCalls (message) {
+    const tr = [];
     for await (const tool_call of message.tool_calls) {
       const functionResponseMessage = await this.processToolCall(tool_call);
-      this.addMessage(functionResponseMessage);
+      tr.push(functionResponseMessage);
     }
+    return tr;
   }
   
   async processToolCall (tool_call) {

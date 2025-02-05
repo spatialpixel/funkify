@@ -79,11 +79,11 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
     return this.state.service.createTextCompletion(params);
   }
   
-  preprocessMessage (message) {
-    this.state.service.preprocessMessage(message);
+  processAssistantMessage (message) {
+    this.state.service.processAssistantMessage(message);
   }
   
-  get includeToolsAfterFunctionCalls () {
-    return this.state.service.includeToolsAfterFunctionCalls;
+  processToolCallsMessage (message) {
+    this.state.service.processToolCallsMessage(message);
   }
 }
