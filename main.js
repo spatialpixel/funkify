@@ -9,6 +9,7 @@ import './src/collapsible-element.js';
 import './src/message-item.js';
 import './src/key-manager.js'
 import './src/service-manager.js';
+import './src/setting-input.js';
 
 import { State } from './src/state.js';
 import { ChatManager } from './src/chat-manager.js';

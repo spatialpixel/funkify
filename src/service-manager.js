@@ -1,5 +1,6 @@
 import OpenAIService from './service-openai.js';
 import HuggingFaceService from './service-huggingface.js';
+import LocalService from './service-local.js';
 
 import _ from 'lodash';
 
@@ -41,7 +42,8 @@ class ServiceManager extends HTMLElement {
     
     this.state.services = {
       openai: new OpenAIService(state),
-      huggingface: new HuggingFaceService(state)
+      huggingface: new HuggingFaceService(state),
+      local: new LocalService(state),
     };
     
     this.onServiceSelect();

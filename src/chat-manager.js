@@ -244,7 +244,7 @@ export class ChatManager {
   async processStreamingCompletion (completion, messageElementId) {
     const message = {};
     
-    const setTopLevel = (message, delta, key) => {
+    const setTopLevel = (message, delta, key, once=false) => {
       if (_.has(delta, key) && !_.has(message, key)) {
         // If the message doesn't have the key, set the initial value.
         // E.g. This also takes care of cases in which the desired value is null.
@@ -253,9 +253,10 @@ export class ChatManager {
         // For strings, concat them to the current value.
         if (!_.isString(message[key])) {
           // Maybe we had an undefined or null value before, so reset it.
-          message[key] = '';
+          message[key] = delta[key];
+        } else if (!once) {
+          message[key] += delta[key];
         }
-        message[key] += delta[key];
       }
     };
     
@@ -270,7 +271,7 @@ export class ChatManager {
       
       // Any expected top-level keys in delta should be copied or appended.
       setTopLevel(message, delta, 'name');
-      setTopLevel(message, delta, 'role');
+      setTopLevel(message, delta, 'role', true);
       setTopLevel(message, delta, 'refusal');
       setTopLevel(message, delta, 'content');
 
