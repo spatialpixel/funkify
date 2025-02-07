@@ -68,17 +68,27 @@
         
         <dropdown-menu class="dropdown-right dropdown-wide">
           <span slot="button-text">About</span>
-          <p>Funkify is a playground for experimenting with 
-            <a href="https://platform.openai.com/docs/guides/function-calling" target="_blank">"function calling"</a>
-            in large language models, specifically the GPT models from OpenAI.</p>
-          <p>This early version uses OpenAI's API, which requires an API key you can get
-            <a href="https://platform.openai.com/" target="_blank">here</a>.
-            Soon, this will leverage other hosted AI services with the same API.</p>
-          <p>The project is currently built by 
+          
+          <p>
+            Funkify is a playground for experimenting with function calling in large language 
+            models, like models from OpenAI and Hugging Face.
+          </p>
+            
+          <p>Funkify currently supports the following LLM providers:</p>
+          
+          <ol>
+            <li><a href="https://platform.openai.com/" target="_blank">OpenAI</a> (requires an API key)</li>
+            <li><a href="https://huggingface.co/" target="_blank">Hugging Face</a> (requires an access token)</li>
+            <li>Local hosting (provide a URL to an OpenAI-compatible LLM server</li>
+          </ol>
+            
+          <p>
+            The project is currently built and maintaned by 
             <a href="https://awmartin.xyz" target="_blank">William Martin</a> at 
             <a href="https://spatialpixel.com" target="_blank">Spatial Pixel</a>.
-            The code is found <a href="https://github.com/spatialpixel/funkify" target="_blank">here
-            on GitHub</a>.</p>
+            The code is found <a href="https://github.com/spatialpixel/funkify/" target="_blank">here
+            on GitHub</a>.
+          </p>
         </dropdown-menu>
       </header>
       
@@ -950,6 +960,13 @@
           list-style-type: none;
           padding: 0;
           margin: 0;
+          text-indent: 0;
+          font-size: 1.0rem;
+          color: var(--text-color);
+        }
+        ::slotted(ol) {
+          padding: 0;
+          margin: 0 0 0 17px;
           text-indent: 0;
           font-size: 1.0rem;
           color: var(--text-color);
