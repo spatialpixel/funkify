@@ -374,7 +374,12 @@ export class ChatManager {
       functionElement = this.renderMessage(functionResponseMessage, function_args);
       
       // Perform the function call.
-      function_result = await function_to_call.call(function_args, this.state);
+      try {
+        function_result = await function_to_call.call(function_args, this.state);
+      } catch (err) {
+        function_result = `Something went wrong with the tool call ${function_name}: ${err.message}`;
+        console.error(function_result);
+      }
     }
     
     functionResponseMessage.content = Helpers.stringify(function_result);
