@@ -1,5 +1,7 @@
 import LLMService from './service-base.js';
 import OpenAI from 'openai';
+import _ from 'lodash';
+
 
 export default class OpenAIService extends LLMService {
   constructor (state) {
@@ -23,7 +25,16 @@ export default class OpenAIService extends LLMService {
   }
   
   async createTextCompletion (params) {
-    return await this.instance.chat.completions.create(params);
+    const openAIParams = this.addOpenAIParams(params);
+    return await this.instance.chat.completions.create(openAIParams);
+  }
+  
+  addOpenAIParams (params) {
+    const tr = _.cloneDeep(params);
+    for (const tool of params.tools) {
+      tool.function.strict = true;
+    }
+    return tr;
   }
   
   get models () {
