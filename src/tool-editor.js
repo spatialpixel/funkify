@@ -167,26 +167,23 @@ class ToolEditor extends HTMLElement {
   createEditor (text="", lang="js") {
     this.editorContainer = this.shadowRoot.querySelector('#function-implementation');
     
-    this.editorTheme = EditorView.baseTheme({
+    const languagePackage = this.getEditorLanguagePackage(lang);
+    
+    this.editorView = new EditorView({
+      doc: text,
+      extensions: this.extensions.concat(languagePackage),
+      parent: this.editorContainer
+    });
+  }
+  
+  get editorTheme () {
+    return EditorView.baseTheme({
       "&": {
         fontSize: "20px",
       },
       "&.cm-focused": {
         outline: "none",
       },
-    });
-    
-    const languagePackage = this.getEditorLanguagePackage(lang);
-    
-    this.editorView = new EditorView({
-      doc: text,
-      extensions: [
-        basicSetup,
-        this.editorTheme,
-        languagePackage,
-        EditorView.lineWrapping,
-      ],
-      parent: this.editorContainer
     });
   }
   
@@ -200,30 +197,43 @@ class ToolEditor extends HTMLElement {
     }
   }
   
+  indentContentFor (lang="js") {
+    if (lang === "js") {
+      return "  ";
+    } else if (lang === "py") {
+      return "    ";
+    } else {
+      return "  ";
+    }
+  }
+  
   setEditorContents (text, lang="js") {
     const languagePackage = this.getEditorLanguagePackage(lang);
+    const indentContent = this.indentContentFor(lang);
+    const extensions = this.extensions.concat([
+      languagePackage,
+      indentUnit.of(indentContent)
+    ]);
     
-    this.editorView.setState(EditorState.create({
+    const newState = EditorState.create({
       doc: text,
-      extensions: [
-        basicSetup,
-        languagePackage,
-        EditorView.lineWrapping,
-        indentUnit.of("    "), // Set indent unit to 4 spaces
-        keymap.of([{
-          key: "Tab",
-          run: (target) => {
-            // Insert 4 spaces when nothing is selected
-            if (target.state.selection.ranges.every(r => r.empty)) {
-              target.dispatch(target.state.replaceSelection("    "));
-              return true;
-            }
-            // Use default indentation for selections
-            return indentWithTab(target);
-          }
-        }])
-      ]
-    }));
+      extensions
+    });
+    
+    this.editorView.setState(newState);
+  }
+  
+  get extensions () {
+    return [
+      basicSetup,
+      this.editorTheme,
+      EditorView.lineWrapping,
+      this.keymap,
+    ];
+  }
+  
+  get keymap () {
+    return keymap.of([ indentWithTab ])
   }
   
   getEditorContents () {
