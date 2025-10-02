@@ -26,30 +26,30 @@ if (document.readyState === 'complete') {
 
 async function onReady () {
   const state = new State();
-  
+
   state.storage = localStorage;
   state.serviceManager = document.querySelector('service-manager');
   state.serviceManager.initialize(state);
-  
+
   const chatDelegate = new FunkifyChatDelegate(state);
   state.chatManager = new ChatManager(state, chatDelegate);
   state.promptManager = new PromptManager(state);
   state.messagesManager = new MessagesManager(state);
-  
+
   state.toolEditor = document.querySelector('tool-editor');
   state.toolEditor.initialize(state);
-  
+
   state.toolsList = document.querySelector('tools-list');
   state.toolsList.populate(state);
-  
+
   state.promptManager.focusPrompt();
-  
+
   state.pyodide = await loadPyodide();
-  
+
   // Load micropip
   await state.pyodide.loadPackage("micropip");
   const micropip = state.pyodide.pyimport("micropip");
-  
+
   // Load numpy to see whether the download works.
   await micropip.install("numpy");
 }

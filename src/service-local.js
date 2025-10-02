@@ -9,18 +9,18 @@ export default class LocalService extends LLMService {
     super(state, 'local');
     // this.state = the app's state singleton
     // this.serviceKey = a string like 'openai' or 'huggingface'
-    
+
     const defaultURL = 'http://localhost:1234/v1';
     this.baseURL = this.state.storage.getItem(`funkify-${this.serviceKey}-base-url`) || defaultURL;
     this.baseURLChanged = false;
-    
+
     this._models = [];
     this.requestModels();
-    
+
     this.urlInput = document.querySelector(`setting-input#local-url`);
     this.urlInput.initialize(this.getterUrl.bind(this), this.setterUrl.bind(this));
   }
-  
+
   initialize () {
     if (!this.instance || this.apiKeyChanged) {
       this.instance = new OpenAI({
@@ -28,49 +28,61 @@ export default class LocalService extends LLMService {
         apiKey: '',
         dangerouslyAllowBrowser: true
       });
-      
+
       this.apiKeyChanged = false;
     }
   }
-  
+
   getterUrl () {
     return this.baseURL;
   }
-  
-  setterUrl (value) {
+
+  async setterUrl (value) {
     this.baseURL = value;
     this.baseURLChanged = true;
     this.state.storage.setItem(`funkify-${this.serviceKey}-base-url`, this.baseURL);
+    await this.requestModels();
+    this.updateModelList();
   }
-  
+
+  updateModelList () {
+    this.state.serviceManager.dispatchEvent(new CustomEvent('update-model-list', {
+      bubbles: false,
+      composed: true,
+      detail: {
+        serviceKey: 'local'
+      }
+    }))
+  }
+
   async createTextCompletion (params) {
     console.debug('local params:', params);
     return await this.instance.chat.completions.create(params);
   }
-  
+
   get models () {
     return this._models;
-    
-    // return [
-    //   'Qwen/Qwen2.5-Coder-32B-Instruct-GGUF'
-    // ]
   }
-  
+
   async requestModels () {
-    const response = await fetch(`${this.baseURL}/models`);
-    const data = await response.json();
-    this._models = _.map(data.data, 'id');
+    try {
+      const response = await fetch(`${this.baseURL}/models`);
+      const data = await response.json();
+      this._models = _.map(data.data, 'id');
+    } catch (err) {
+      console.error(`LocalService: Couldn't fetch models from the local service.`);
+    }
   }
-  
+
   processAssistantMessage (message) {
     // local models sometimes put a tool call into the content field, because reasons.
     try {
       const data = JSON.parse(message.content);
-      
+
       if (_.has(data, 'name') && _.has(data, 'parameters')) {
         // This is a tool_call message. Reformat it.
         const uid = new ShortUniqueId({ length: 9 });
-        
+
         const tool_call = {
           type: "function",
           id: uid.rnd(),
@@ -79,7 +91,7 @@ export default class LocalService extends LLMService {
             arguments: data.parameters
           }
         };
-        
+
         message.tool_calls = [ tool_call ];
         message.content = "";
         message.role = "assistant";
