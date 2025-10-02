@@ -3,28 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
+
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="mask-icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"> <!-- for Safari-->
     <link rel="manifest" href="/site.webmanifest">
-    
+
     <script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
-    
+
     <title>Funkify by Spatial Pixel</title>
   </head>
   <body>
     <div class="container">
       <header>
         <h1>Funkify by Spatial Pixel</h1>
-        
+
         <div style="flex-grow: 2"></div>
-        
+
         <dropdown-menu class="dropdown-right dropdown-wide">
           <span slot="button-text">Settings</span>
           <ul>
@@ -33,23 +33,23 @@
                 OpenAI API Key
               </key-manager>
             </li>
-            
+
             <li><hr></li>
-            
+
             <li>
               <key-manager id="huggingface-api-key" key="huggingface-api-key">
                 Hugging Face API Key
               </key-manager>
             </li>
-            
+
             <li><hr></li>
-            
+
             <li>
               <setting-input id="local-url">
                 Local Service URL and Port
               </setting-input>
             </li>
-            
+
             <li>
               <p class="small">
                 Note that this isn't best practice to enter an API key into a web app
@@ -59,55 +59,55 @@
                 any code you use as functions.
               </p>
             </li>
-            
+
             <li>
               <button id="populate-example-functions">Populate with example functions</button>
             </li>
           </ul>
         </dropdown-menu>
-        
+
         <dropdown-menu class="dropdown-right dropdown-wide">
           <span slot="button-text">About</span>
-          
+
           <p>
-            Funkify is a playground for experimenting with function calling in large language 
+            Funkify is a playground for experimenting with function calling in large language
             models, like models from OpenAI and Hugging Face.
           </p>
-            
+
           <p>Funkify currently supports the following LLM providers:</p>
-          
+
           <ol>
             <li><a href="https://platform.openai.com/" target="_blank">OpenAI</a> (requires an API key)</li>
             <li><a href="https://huggingface.co/" target="_blank">Hugging Face</a> (requires an access token)</li>
             <li>Local hosting (provide a URL to an OpenAI-compatible LLM server</li>
           </ol>
-            
+
           <p>
-            The project is currently built and maintaned by 
-            <a href="https://awmartin.xyz" target="_blank">William Martin</a> at 
+            The project is currently built and maintaned by
+            <a href="https://awmartin.xyz" target="_blank">William Martin</a> at
             <a href="https://spatialpixel.com" target="_blank">Spatial Pixel</a>.
             The code is found <a href="https://github.com/spatialpixel/funkify/" target="_blank">here
             on GitHub</a>.
           </p>
         </dropdown-menu>
       </header>
-      
+
       <main>
         <div id="chat" class="column column-9">
           <div id="chat-header" class="row">
             <div class="column-6">
               <h3>Chat</h3>
-              
+
               <div style="flex-grow:2"></div>
-              
+
               <service-manager default="openai"></service-manager>
             </div>
-            
+
             <div class="column-6">
               <h3>Function Calls</h3>
             </div>
           </div>
-          
+
           <div class="scrollable">
             <div id="system-context-container">
               <div class="left column column-6">
@@ -116,10 +116,10 @@
               </div>
               <div class="right column column-6"></div>
             </div>
-            
+
             <div id="messages-list"></div>
           </div>
-          
+
           <div class="prompt">
             <div class="column-6" id="prompt-container">
               <textarea id="prompt" placeholder="Chat using OpenAI (Enter to send. Shift+Enter for new line.)"></textarea>
@@ -131,15 +131,15 @@
             <div class="column-6"></div>
           </div>
         </div>
-        
+
         <div id="tools" class="column column-3">
           <tools-list class="has-dropdowns"></tools-list>
         </div>
       </main>
     </div>
-    
+
     <tool-editor style="display:none;"></tool-editor>
-    
+
     <template id="service-manager-template">
       <style>
       select {
@@ -192,7 +192,7 @@
         background-color: var(--background-color);
       }
       </style>
-      
+
       <div>
         <label>
           <select id="service-picker">
@@ -201,17 +201,17 @@
             <option value="local">Local</option>
           </select>
         </label>
-        
+
         <label>
           Model
           <select id="model-picker"></select>
-          
+
           <div id="manual-model-entry" style="display:none;">
             <input type="text" placeholder="model-name-here">
             <button title="Clear this model entry">×</button>
           </div>
         </label>
-        
+
         <label>
           Vision
           <select id="vision-detail" title="Vision detail. Selectable for models with vision capabilities.">
@@ -222,7 +222,7 @@
         </label>
       </div>
     </template>
-    
+
     <template id="setting-input-template">
       <style scoped>
         .form {
@@ -235,19 +235,19 @@
           margin: 5px 0 0 0;
           border-radius: 4px;
           border-width: 1px;
-          
+
           color: var(--text-color);
           border: 2px solid var(--border-color);
           background-color: var(--background-color);
         }
       </style>
-      
+
       <div class="setting-input form">
         <label></label>
         <input type="text" />
       </div>
     </template>
-    
+
     <template id="key-manager-template">
       <style scoped>
         .form {
@@ -260,7 +260,7 @@
           margin: 5px 0 0 0;
           border-radius: 4px;
           border-width: 1px;
-          
+
           color: var(--text-color);
           border: 2px solid var(--border-color);
           background-color: var(--background-color);
@@ -281,20 +281,20 @@
           border-color: var(--border-color);
         }
       </style>
-      
+
       <div class="key-manager form">
         <label></label>
         <input type="password" autocomplete="new-password" />
         <button>👁️</button>
       </div>
     </template>
-    
+
     <template id="tool-item-template">
       <style>
         .tool-item {
           margin-bottom: 5px;
           padding: 8px 0;
-          
+
           display: flex;
           flex-direction: row;
         }
@@ -315,7 +315,7 @@
         .tool-right {
           width: 30px;
         }
-        
+
         button {
           font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
           border: 2px solid var(--border-color);
@@ -331,7 +331,7 @@
         button:active {
           background-color: var(--secondary-color);
         }
-        
+
         button.delete-tool {
           color: var(--primary-color);
           border: none;
@@ -348,19 +348,19 @@
           background-color: var(--primary-color);
         }
       </style>
-      
+
       <div class="tool-item">
         <div class="tool-left">
           <div class="name"></div>
           <div class="description"></div>
         </div>
-        
+
         <div class="tool-right">
           <button class="delete-tool">×</button>
         </div>
       </div>
     </template>
-    
+
     <template id="collapsible-element-template">
       <style>
         .collapsible-element {
@@ -404,7 +404,7 @@
           background-color: var(--primary-color);
         }
       </style>
-      
+
       <div class="collapsible-element">
         <div class="collapsible-left">
           <button class="collapsible-toggle">→</button>
@@ -417,7 +417,7 @@
         </div>
       </div>
     </template>
-    
+
     <template id="parameter-item-template">
       <style>
         .parameter-item {
@@ -426,7 +426,7 @@
           display: flex;
           flex-direction: row;
         }
-        .parameter-left { 
+        .parameter-left {
           width: 250px;
           display: flex;
           flex-direction: row;
@@ -506,7 +506,7 @@
           color: white;
           background-color: var(--primary-color);
         }
-        
+
         button {
           font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
           border: 2px solid var(--border-color);
@@ -544,14 +544,14 @@
           background-color: var(--primary-color);
         }
       </style>
-      
+
       <div class="parameter-item">
         <div class="parameter-left">
           <input type="text" class="parameter-name" placeholder="parameter"/>
         </div>
-        
+
         <div class="parameter-middle"></div>
-        
+
         <div class="parameter-right">
           <div class="parameter-header">
             <select class="parameter-type">
@@ -560,21 +560,21 @@
               <option value='array-number'>array of numbers</option>
               <option value='array-string'>array of strings</option>
             </select>
-            
+
             <label>
               <input type="checkbox" class="parameter-required" />&nbsp;Required
             </label>
-            
+
             <div style="flex-grow:2"></div>
-            
+
             <button class="remove-parameter">×</button>
           </div>
-          
+
           <textarea class="parameter-description"></textarea>
         </div>
       </div>
     </template>
-    
+
     <template id="tool-editor-template">
       <style>
         h1, h2, h3 {
@@ -617,7 +617,7 @@
           background-color: var(--background-color);
           color: var(--text-color);
         }
-        
+
         .tool-editor-mask {
           position: absolute;
           left: 0;
@@ -639,11 +639,11 @@
           box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
           background-color: var(--background-color);
           color: var(--text-color);
-          
+
           display: flex;
           flex-direction: row;
           gap: 20px;
-          
+
           padding: 0 20px;
         }
         .tool-editor-header {
@@ -652,7 +652,7 @@
           align-items: center;
           justify-content: space-between;
           gap: 10px;
-          
+
           min-height: 50px;
         }
         .tool-editor-header h3 {
@@ -674,12 +674,12 @@
           display: flex;
           flex-direction: row;
           align-items: center;
-          
+
           gap: 10px;
           height: 60px !important;
           flex-shrink: 0;
         }
-        
+
         input.function-name-field {
           flex-grow: 2;
           font-weight: bold;
@@ -705,7 +705,7 @@
         .function-description-field:hover {
           background-color: rgba(var(--primary-color-rgb), 0.1);
         }
-        
+
         #function-implementation {
           flex-grow: 2;
           width: calc(100% - 4px);
@@ -713,7 +713,7 @@
           border-radius: 3px;
           overflow-y: scroll;
         }
-        
+
         select#language-selection {
           padding: 5px;
           width: min-content;
@@ -726,13 +726,13 @@
           font-size: 30px;
           line-height: 40px;
           padding: 0 0 4px 0;
-          
+
           flex: 0 0 40px;
           display: flex;
           justify-content: center;
           align-items: center;
         }
-        
+
         .column-8 {
           width: 66.6%;
         }
@@ -745,44 +745,44 @@
           width: 33.3%;
         }
       </style>
-      
+
       <div class="tool-editor-mask"></div>
       <div class="tool-editor">
         <div class="column-6">
           <div class="tool-editor-header">
             <input type="text" class="function-name-field" placeholder="A JS-friendly function name…" />
           </div>
-          
+
           <div class="tool-editor-main">
             <textarea class="function-description-field" placeholder="Describe what this function does and returns…"></textarea>
             <div class="parameters-list">
             </div>
           </div>
-          
+
           <div class="tool-editor-footer">
             <button class="add-parameter">Add Parameter</button>
           </div>
         </div>
-        
+
         <div class="column-6">
           <div class="tool-editor-header">
             <h3>Implementation</h3>
             <div class="note">
               <p>(Just the function body.)</p>
             </div>
-            
+
             <select id="language-selection">
               <option value="js">JavaScript</option>
               <option value="py">Python</option>
             </select>
-            
+
             <!-- <div style="flex-grow: 2"></div> -->
-            
+
             <button class="tool-editor-closer">×</button>
           </div>
-          
+
           <div id="function-implementation"></div>
-          
+
           <div class="tool-editor-footer">
             <div style="flex-grow: 2"></div>
             <button class="tool-save">Save Function</button>
@@ -790,7 +790,7 @@
         </div>
       </div>
     </template>
-    
+
     <template id="tools-list-template">
       <style>
         /* Insert contents of dropdown-menu.css manually here. */
@@ -811,7 +811,7 @@
           --dropdown-button-border: none;
           --dropdown-width: 640px;
         }
-        
+
         .tools-list-header {
           display: flex;
           flex-direction: row;
@@ -820,6 +820,10 @@
           border-bottom: 2px solid var(--border-color);
           margin-bottom: 10px;
           height: 40px;
+        }
+        .tools-list-main {
+          height: calc(100vh - 120px);
+          overflow-y: scroll;
         }
         button {
           font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
@@ -846,20 +850,31 @@
         h3 {
           margin: 0;
         }
-        #exporter {
+        #exporter,
+        #importer {
           width: 100%;
           height: 500px;
           resize: none;
         }
       </style>
-      
+
       <div class="tools-list">
         <div class="tools-list-header">
           <h3>Function Definitions</h3>
-          
+
           <div style="flex-grow:2"></div>
-          
+
+          <dropdown-menu class="dropdown-right dropdown-widest">
+            <span slot="button-text">→ƒ</span>
+            <div>
+              <h3>Import Functions from JSON</h3>
+              <textarea id="importer"></textarea>
+              <button id="import">Import!</button>
+            </div>
+          </dropdown-menu>
+
           <button class="new-function" title="Add new function">+ƒ</button>
+
           <dropdown-menu class="dropdown-right dropdown-widest">
             <span slot="button-text">ƒ→</span>
             <div>
@@ -868,10 +883,11 @@
             </div>
           </dropdown-menu>
         </div>
+
         <div class="tools-list-main"></div>
       </div>
     </template>
-    
+
     <template id="dropdown-menu-template">
       <style>
         :host {
@@ -882,7 +898,7 @@
           --primary-color: #f70;
           --primary-color-lightened: #f90;
         }
-        
+
         .dropdown {
           position: relative;
           display: inline-block;
@@ -898,16 +914,16 @@
           max-height: 75vh;
           padding: 8px;
           color: var(--text-color);
-      
+
           background-color: var(--background-color);
           box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
           border: 2px solid var(--border-color);
           border-radius: 3px;
-        
+
           font-size: 1.0rem;
           line-height: 1.5;
         }
-      
+
         .dropdown-content.show {
             display: block;
         }
@@ -920,7 +936,7 @@
         .dropdown-content a:hover {
             background-color: #ddd;
         }
-        
+
         button {
           font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
           border: var(--dropdown-button-border);
@@ -938,7 +954,7 @@
         button:active {
           background-color: var(--primary-color-lightened);
         }
-      
+
         ::slotted(button) {
           border: none;
           display: block;
@@ -988,20 +1004,20 @@
         <button class="dropdown-toggle">
           <slot name="button-text">Toggle</slot>
         </button>
-        
+
         <div class="dropdown-content">
           <slot></slot>
         </div>
       </div>
     </template> <!-- end dropdown-menu-template -->
-    
+
     <template id="projects-list-template">
       <style>
         :host {
           --primary-color: #f70;
           --primary-color-lightened: #f90;
         }
-        
+
         button.action {
           border: 2px solid var(--border-color);
           border-radius: 3px;
@@ -1033,7 +1049,7 @@
           color: #222;
           background-color: var(--primary-color);
         }
-        
+
         .actions {
           display: flex;
           flex-direction: row;
@@ -1049,7 +1065,7 @@
           border-color: darkred;
         }
       </style>
-      
+
       <div class="actions">
         <button class="action" id="new-project">New Project</button>
         <button class="action" id="save-project">Save Current Project</button>
@@ -1059,7 +1075,7 @@
       <div class="projects">
       </div>
     </template>
-    
+
     <template id="message-item-template">
       <style>
       svg line {
@@ -1111,7 +1127,7 @@
         white-space: pre-wrap;
       }
       </style>
-      
+
       <div class="message">
         <div class="left">
         </div>
@@ -1119,7 +1135,7 @@
         </div>
       </div>
     </template>
-    
+
     <script type="module" src="/main.js"></script>
   </body>
 </html>
