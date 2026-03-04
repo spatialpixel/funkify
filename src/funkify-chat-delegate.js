@@ -40,6 +40,10 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
     return _.map(this.state.tools, 'schema');
   }
 
+  get useStructuredOutputs () {
+    // return document.querySelector('#use-structured-outputs').checked;
+  }
+
   get functions () {
     return this.state.tools;
   }

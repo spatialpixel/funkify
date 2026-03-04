@@ -24,7 +24,7 @@
 
 /* Base styles */
 
-input {
+input[type=text], input[type=password] {
   font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   width: calc(100% - 22px);
   padding: 10px;
@@ -92,15 +92,15 @@ body {
   padding: 0;
   margin: 0;
   overscroll-behavior: none;
-  
+
   background-color: var(--background-color);
   width: 100vw;
   line-height: 1.5;
-  
+
   /* To prevent margin collapse. */
   display: flex;
   flex-direction: column;
-  
+
   font-family: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   color: var(--text-color);
 }
