@@ -39,7 +39,6 @@ export default class OpenAIService extends LLMService {
 
   get models () {
     return [
-      'gpt-5.3',
       'gpt-5.2',
       'gpt-5.1',
       'gpt-5',
