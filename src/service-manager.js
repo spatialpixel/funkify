@@ -48,6 +48,11 @@ class ServiceManager extends HTMLElement {
       local: new LocalService(state),
     };
 
+    const preferred = localStorage.getItem('funkify-preferred-service');
+    if (_.isString(preferred)) {
+      this.servicePicker.value = preferred;
+    }
+
     this.onServiceSelect();
 
     this.populateModels();
@@ -98,6 +103,7 @@ class ServiceManager extends HTMLElement {
 
   onServiceSelect (event) {
     this.state.service = this.state.services[this.serviceKey];
+    localStorage.setItem('funkify-preferred-service', this.serviceKey);
 
     this.populateModels();
 
