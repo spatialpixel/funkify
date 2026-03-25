@@ -22,10 +22,10 @@ const get_current_weather_code_py = `# Retrieves data regarding the current weat
 
 url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall"
 
-result = await pyfetch(url)
-response = await result.json()
+response = await pyfetch(url)
+result = await response.json()
 
-return response`;
+return result`;
 
 const get_current_weather = () => (new FunctionTool(
   `funkify-tool-${uuidv4()}`,
