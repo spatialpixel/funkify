@@ -1,6 +1,52 @@
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * Indent every line of a given text by `n` spaces.
+ *
+ * @param {string} src          The original source code (may contain \n line‑breaks).
+ * @param {number} [indent=4]   How many spaces to prepend to each line.
+ * @returns {string}            The indented source, ready for template‑literal interpolation.
+ */
+function indentLines (src, indent = 4) {
+    // Build the indentation string once – e.g. "    "
+    const pad = ' '.repeat(indent);
+
+    // Split on \n (preserves empty lines), prepend padding to each line,
+    // then join back together with \n.
+    return src
+        .split('\n')
+        .map(line => pad + line)   // even an empty string becomes "    "
+        .join('\n');
+}
+
+async function runWithExtras(pythonSnippet, extras, pyodide) {
+    // 1️⃣ Save any keys that might clash so we can restore them later
+    const saved = {};
+    for (const name of Object.keys(extras)) {
+        if (pyodide.globals.has(name)) {
+            saved[name] = pyodide.globals.get(name);
+        }
+        // 2️⃣ Insert the extra value
+        pyodide.globals.set(name, extras[name]);
+    }
+
+    try {
+        // 3️⃣ Execute the user snippet – it can call fetch_joke() freely
+        const resultPromise = pyodide.runPython(pythonSnippet); // returns a Promise if the code yields a Future
+        return await resultPromise;
+    } finally {
+        // 4️⃣ Restore original globals (or delete if they didn’t exist before)
+        for (const name of Object.keys(extras)) {
+            if (saved.hasOwnProperty(name)) {
+                pyodide.globals.set(name, saved[name]);
+            } else {
+                pyodide.globals.delete(name);
+            }
+        }
+    }
+}
+
 export default class FunctionTool {
   constructor (id, name, description, properties, required, f, language) {
     this.id = id;
@@ -63,9 +109,33 @@ ${ this.f }
 
   async callPython (args, state) {
     // https://pyodide.org/en/stable/usage/faq.html#how-can-i-execute-code-in-a-custom-namespace
-    const namespace = state.pyodide.toPy(args);
-    const result = state.pyodide.runPythonAsync(this.f, { globals: namespace });
+    // const namespace = state.pyodide.toPy(args);
+    const pyCode = this.prepPythonCode(this.f);
+    // await state.pyodide.runPythonAsync(pyCode, { globals: namespace });
+    await state.pyodide.runPythonAsync(pyCode);
+
+    // const resultPromise = state.pyodide.runPython("result_getter()");
+    // const result = await resultPromise;
+    // console.log('callPython namespace=', namespace);
+    const proxy = await runWithExtras("result_getter()", args, state.pyodide);
+    const result = proxy.toJs();
+
+    console.debug("callPython result=", result);
+
     return result;
+  }
+
+  prepPythonCode (f) {
+    const indented = indentLines(f);
+    return `import asyncio
+from pyodide.http import pyfetch
+async def my_function():
+${indented}
+
+def result_getter():
+  loop = asyncio.get_event_loop()
+  return asyncio.ensure_future(my_function())
+`;
   }
 
   get schema () {

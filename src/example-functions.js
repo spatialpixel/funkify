@@ -16,7 +16,17 @@ const result = await fetch(url);
 const response = await result.json();
 
 return response;`
-  
+
+const get_current_weather_code_py = `# Retrieves data regarding the current weather
+# in the given location from Open Meteo
+
+url = f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,rain,showers,snowfall"
+
+result = await pyfetch(url)
+response = await result.json()
+
+return response`;
+
 const get_current_weather = () => (new FunctionTool(
   `funkify-tool-${uuidv4()}`,
   'get_current_weather',
@@ -26,20 +36,20 @@ const get_current_weather = () => (new FunctionTool(
       'type': 'string',
       'description': 'The location the user is asking about.'
     },
-    
+
     'latitude': {
       'type': 'number',
       'description': 'The latitude of the location the user is asking about.'
     },
-    
+
     'longitude': {
       'type': 'number',
       'description': 'The longitude of the location the user is asking about.'
     }
   },
   ['latitude', 'longitude'],
-  get_current_weather_code,
-  'js'
+  get_current_weather_code_py,
+  'py'
 ));
 
 const search_academic_commons_code = `// Searches Columbia University's "Academic Commons" given a keyword.
@@ -79,7 +89,7 @@ const search_academic_commons = () => (new FunctionTool(
 const generate_sample_data_py_code = `# Generates some random numbers in a normal distribution using numpy
 
 import numpy as np
- 
+
 x = np.random.normal(10, 20, (num_samples or 10,))
 x.tolist()
 `;
