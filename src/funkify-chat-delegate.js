@@ -17,13 +17,13 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
 
     this.systemContextInput = document.querySelector('textarea#system-context');
 
-    const storedContext = localStorage.getItem('funkify-system-context');
+    const storedContext = this.state.storage.getItem('funkify-system-context');
     if (storedContext) {
       this.systemContextInput.value = storedContext;
     }
 
     this.systemContextInput.addEventListener('change', event => {
-      localStorage.setItem('funkify-system-context', this.systemContextInput.value);
+      this.state.storage.setItem('funkify-system-context', this.systemContextInput.value);
     });
   }
 

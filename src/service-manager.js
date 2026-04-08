@@ -54,8 +54,6 @@ class ServiceManager extends HTMLElement {
     }
 
     await this.onServiceSelect();
-
-    this.modelPicker.value = this.state.service.models[0];
   }
 
   get service () {
@@ -104,14 +102,28 @@ class ServiceManager extends HTMLElement {
 
   async onServiceSelect (event) {
     this.state.service = this.state.services[this.serviceKey];
-    localStorage.setItem('funkify-preferred-service', this.serviceKey);
+    this.state.storage.setItem('funkify-preferred-service', this.serviceKey);
 
-    await this.state.service.requestModels();
+    await this.service.requestModels();
 
     this.populateModels();
 
-    // When picking a new service, should probably reset the manual entry field too.
-    this.hideManualEntry();
+    const lastServiceModel = this.service.lastModel;
+    if (lastServiceModel) {
+      if (_.includes(this.service.models, lastServiceModel)) {
+        this.hideManualEntry();
+        this.modelPicker.value = lastServiceModel;
+      } else {
+        // Pick other and add it.
+        this.showManualModelEntryInput();
+        this.manualModelEntryInput.value = lastServiceModel;
+      }
+    } else {
+      this.modelPicker.value = this.service.models[0];
+      this.hideManualEntry();
+    }
+
+    this.onModelSelect();
   }
 
   onModelSelect (event) {
@@ -124,14 +136,21 @@ class ServiceManager extends HTMLElement {
     } else {
       this.visionDetailPicker.setAttribute('disabled', true);
     }
+
+    if (event && this.currentModel !== 'other') {
+      this.service.saveLastModel(this.currentModel);
+    }
   }
 
-  hideManualEntry () {
+  hideManualEntry (event) {
     this.manualModelEntryInput.value = '';
     this.manualModelEntry.style.display = 'none';
     this.modelPicker.style.display = 'initial';
 
     this.modelPicker.value = this.service.models[0];
+    if (event) {
+      this.service.saveLastModel(this.currentModel);
+    }
   }
 
   showManualModelEntryInput () {
@@ -143,7 +162,8 @@ class ServiceManager extends HTMLElement {
   }
 
   onManualEntry (event) {
-
+    const model = this.manualModelEntryInput.value
+    this.service.saveLastModel(model);
   }
 
   onUpdateModelList (event) {

@@ -8,6 +8,7 @@ export default class LLMService {
     this.instance = null;
 
     this.apiKey = this.state.storage.getItem(`funkify-${this.serviceKey}-api-key`);
+    this.lastModel = this.state.storage.getItem(`funkify-${this.serviceKey}-model`);
   }
 
   // Called at the start of every completion. Should ensure there is an instance
@@ -52,5 +53,9 @@ export default class LLMService {
 
   processToolCallsMessage (message) {
 
+  }
+
+  saveLastModel (model) {
+    this.state.storage.setItem(`funkify-${this.serviceKey}-model`, model);
   }
 }
