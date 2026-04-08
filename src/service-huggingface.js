@@ -73,7 +73,7 @@ export default class HuggingFaceService extends LLMService {
   }
 
   modelSupportsVision (model) {
-    const modelsWithVision = ['openai/gpt-oss-120b', 'meta-llama/Llama-3.2-11B-Vision-Instruct'];
+    const modelsWithVision = ['meta-llama/Llama-3.2-11B-Vision-Instruct'];
     return modelsWithVision.includes(model);
   }
 
