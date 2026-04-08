@@ -1,5 +1,4 @@
 import LLMService from './service-base.js';
-// import { HfInference } from '@huggingface/inference';
 import { InferenceClient } from "https://esm.sh/@huggingface/inference";
 import ShortUniqueId from 'short-unique-id';
 import _ from 'lodash';
@@ -17,37 +16,13 @@ export default class HuggingFaceService extends LLMService {
 
   initialize () {
     if (!this.instance || this.apiKeyChanged) {
-      // this.instance = new HfInference(this.apiKey);
       this.instance = new InferenceClient(this.apiKey);
 
       this.apiKeyChanged = false;
     }
   }
 
-  preprocessParams (params) {
-    const isImageMessage = message => {
-      const gotAnArray = _.isArray(message.content);
-      if (!gotAnArray) { return false; }
-      const imageUrls = _.filter(message.content, msg => msg.type === "image_url");
-      return _.size(imageUrls) > 0;
-    };
-
-    const isToolMessage = message => message.role === 'tool';
-
-    const lastMessage = _.last(params.messages);
-
-    // TODO: Check that all tool calls were satisfied.
-
-    // There are two bugs in HuggingFace Inference API. Tool calls only resolve if there is no
-    // 'tools' field, and image messages seem to trigger tools even if the inference doesn't work.
-    if (isToolMessage(lastMessage) || isImageMessage(lastMessage)) {
-      delete params["tools"]
-    }
-  }
-
   async createTextCompletion (params) {
-    // this.preprocessParams(params);
-
     console.debug(`huggingface completion params:`, params);
 
     // return await this.instance.chatCompletionStream(params);
@@ -55,8 +30,6 @@ export default class HuggingFaceService extends LLMService {
   }
 
   get models () {
-    // HACK: For llama and qwen models, tool_calls should have content: "". So ignore "tools" once the call is done.
-    // Also vision models with images need to ignore "tools".
     return [
       'openai/gpt-oss-120b',
       'Qwen/Qwen3.5-35B-A3B',                     // vision
