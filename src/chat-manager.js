@@ -100,16 +100,30 @@ export class ChatManager {
   async submitPrompt (userPrompt) {
     const message = {
       role: 'user',
-      content: this.getUserMessageContent(userPrompt),
+      content: await this.getUserMessageContent(userPrompt),
     };
 
     return await this.submitMessage(message);
   }
 
+  async getBase64Encoded (url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+      console.log(`Something went wrong fetching image ${url}:`, response);
+      return [null, null];
+    }
+
+    const contentType = response.headers.get('Content-Type') || 'application/octet-stream';
+    const buf = await response.arrayBuffer();
+    const base64Image = Helpers.arrayBufferToBase64(buf);
+
+    return [contentType, base64Image];
+  }
+
   // Returns the proper "content" field for a user's message.
   // This sanitizes the input (according to the delegate implementation) and takes
   // into account image URLs.
-  getUserMessageContent (prompt) {
+  async getUserMessageContent (prompt) {
     const sanitizedPrompt = this.delegate.sanitizeUserPrompt(prompt);
 
     if (!this.supportsImages || !this.isVisionModel) { return sanitizedPrompt; }
@@ -127,17 +141,21 @@ export class ChatManager {
 
     // For each image URL, add a part to the content.
     // https://platform.openai.com/docs/guides/vision
-    imageUrls.forEach(url => {
-      const part = {
-        type: "image_url",
-        image_url: {
-          url: url,
-          detail: this.visionDetail,
-        }
-      };
+    for (const url of imageUrls) {
+      const [contentType, base64Image] = await this.getBase64Encoded(url);
 
-      content.push(part);
-    });
+      if (contentType && base64Image) {
+        const part = {
+          type: "image_url",
+          image_url: {
+            url: `data:${contentType};base64,${base64Image}`,
+            detail: this.visionDetail,
+          }
+        };
+
+        content.push(part);
+      }
+    }
 
     return content;
   }

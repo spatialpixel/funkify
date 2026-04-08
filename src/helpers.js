@@ -61,7 +61,7 @@ export function screenToWorld (p, x, y) {
   // Invert the projection matrix
   const invertedProjection = new p5.Matrix();
   invertedProjection.invert(projectionMatrix);
-  
+
   // Invert the model-view matrix.
   const invertedView = new p5.Matrix();
   invertedView.invert(modelViewMatrix);
@@ -70,11 +70,11 @@ export function screenToWorld (p, x, y) {
   const screenX = x * 2 / p.width - 1;
   const screenY = -y * 2 / p.height + 1;
   const screenZ = 0.00001;
-  
+
   const eyeSpaceCoords = invertedProjection.multiplyVec4(screenX, screenY, screenZ, 1);
 
   // Apply the inverse model-view matrix to get the world coordinates
-  
+
   const worldCoordinates = invertedView.multiplyVec4(eyeSpaceCoords[0], eyeSpaceCoords[1], eyeSpaceCoords[2], eyeSpaceCoords[3]);
   worldCoordinates[0] /= worldCoordinates[3];
   worldCoordinates[1] /= worldCoordinates[3];
@@ -106,4 +106,15 @@ export function stringify (function_result) {
     stringified_result = _.toString(function_result);
   }
   return stringified_result;
+}
+
+export function arrayBufferToBase64(buf) {
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  // Process in chunks to avoid call‑stack overflow on huge files
+  const chunkSize = 0x8000; // 32 KB
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
 }

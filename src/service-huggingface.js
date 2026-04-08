@@ -26,9 +26,9 @@ export default class HuggingFaceService extends LLMService {
 
   preprocessParams (params) {
     const isImageMessage = message => {
-      const gotAnArray = _.isArray(lastMessage.content);
+      const gotAnArray = _.isArray(message.content);
       if (!gotAnArray) { return false; }
-      const imageUrls = _.filter(lastMessage.content, msg => msg.type === "image_url");
+      const imageUrls = _.filter(message.content, msg => msg.type === "image_url");
       return _.size(imageUrls) > 0;
     };
 

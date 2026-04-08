@@ -79,6 +79,8 @@ class ServiceManager extends HTMLElement {
   }
 
   get currentModelSupportsVision () {
+    // Assume all custom models can support vision for now.
+    if (this.manualModelEntry.style.display !== 'none') { return true; }
     return this.service.modelSupportsVision(this.currentModel);
   }
 
