@@ -105,4 +105,8 @@ export default class LocalService extends LLMService {
       }
     }
   }
+
+  modelSupportsVision (model) {
+    return true;
+  }
 }

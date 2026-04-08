@@ -39,7 +39,7 @@ class ServiceManager extends HTMLElement {
     this.addEventListener('update-model-list', this.onUpdateModelList.bind(this));
   }
 
-  initialize (state) {
+  async initialize (state) {
     this.state = state;
 
     this.state.services = {
@@ -53,9 +53,8 @@ class ServiceManager extends HTMLElement {
       this.servicePicker.value = preferred;
     }
 
-    this.onServiceSelect();
+    await this.onServiceSelect();
 
-    this.populateModels();
     this.modelPicker.value = this.state.service.models[0];
   }
 
@@ -101,9 +100,11 @@ class ServiceManager extends HTMLElement {
     this.onModelSelect();
   }
 
-  onServiceSelect (event) {
+  async onServiceSelect (event) {
     this.state.service = this.state.services[this.serviceKey];
     localStorage.setItem('funkify-preferred-service', this.serviceKey);
+
+    await this.state.service.requestModels();
 
     this.populateModels();
 
