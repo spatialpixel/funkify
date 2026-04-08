@@ -4,8 +4,9 @@ import _ from 'lodash';
 const funkifyContext = `You are a web application with a chat interface with
 several available functions. When these functions return empty values, do
 not generate new values, simply continue with no information. It is okay
-to say you do not have enough information or the function returned no
-value. Here is additional context:`;
+to say you do not have enough information or the function returned no value.
+Ensure when calling functions that you call multiple functions when necessary.
+Here is additional context:`;
 
 export default class FunkifyChatDelegate extends ChatManagerDelegate {
   constructor (state) {
