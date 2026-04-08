@@ -58,7 +58,7 @@ export default class FunctionTool {
 
     this.f = f;
 
-    this.language = language || 'js';
+    this.language = language || 'py';
   }
 
   applyDefaults (args) {
@@ -174,10 +174,9 @@ FunctionTool.factory = () => {
   const parameters = {};
   const required = [];
 
-  const f = `// Just the function body here. "await" is supported.
+  const f = `return { "message": "Success" }`;
 
-return "Success";`;
-  const language = 'js';
+  const language = 'py';
 
   const tr = new FunctionTool(id, name, description, parameters, required, f, language);
   return tr;
