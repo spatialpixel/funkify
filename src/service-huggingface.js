@@ -59,21 +59,26 @@ export default class HuggingFaceService extends LLMService {
     // Also vision models with images need to ignore "tools".
     return [
       'openai/gpt-oss-120b',
-      'remyxai/SpaceOm',
+      'Qwen/Qwen3.5-35B-A3B',                     // vision
       'Qwen/Qwen3-Coder-480B-A35B-Instruct',
       'Qwen/Qwen3-Coder-30B-A3B-Instruct',
       'Qwen/Qwen2.5-72B-Instruct',
-      'Qwen/Qwen2.5-Coder-32B-Instruct',
+      'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8', // vision
+      'meta-llama/Llama-3.3-70B-Instruct',
+      'meta-llama/Llama-3.2-11B-Vision-Instruct', // vision
       'meta-llama/Meta-Llama-3-8B-Instruct',
-      'meta-llama/Llama-3.2-11B-Vision-Instruct',
-      'NousResearch/Hermes-3-Llama-3.1-8B',
-      'zai-org/GLM-4.5',
-      'zai-org/GLM-4.1V-9B-Thinking',
+      'zai-org/GLM-5.1',
+      'zai-org/GLM-4.6V-FP8',                     // vision
     ];
   }
 
   modelSupportsVision (model) {
-    const modelsWithVision = ['openai/gpt-oss-120b', 'meta-llama/Llama-3.2-11B-Vision-Instruct'];
+    const modelsWithVision = [
+      'Qwen/Qwen3.5-35B-A3B',
+      'meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8',
+      'meta-llama/Llama-3.2-11B-Vision-Instruct',
+      'zai-org/GLM-4.6V-FP8',
+    ];
     return modelsWithVision.includes(model);
   }
 
