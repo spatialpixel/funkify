@@ -40,6 +40,9 @@ export default class FunkifyChatDelegate extends ChatManagerDelegate {
   }
 
   get isVisionModel () {
+    // THe "none" value enables a user to turn vision capabilities off for the
+    // current request.
+    if (this.visionDetail === "none") { return false; }
     return this.service.modelSupportVision(this.currentModel);
   }
 
