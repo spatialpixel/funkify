@@ -1,5 +1,6 @@
 import LLMService from './service-base.js';
-import { HfInference } from '@huggingface/inference';
+// import { HfInference } from '@huggingface/inference';
+import { InferenceClient } from "https://esm.sh/@huggingface/inference";
 import ShortUniqueId from 'short-unique-id';
 import _ from 'lodash';
 
@@ -16,7 +17,8 @@ export default class HuggingFaceService extends LLMService {
 
   initialize () {
     if (!this.instance || this.apiKeyChanged) {
-      this.instance = new HfInference(this.apiKey);
+      // this.instance = new HfInference(this.apiKey);
+      this.instance = new InferenceClient(this.apiKey);
 
       this.apiKeyChanged = false;
     }
@@ -44,7 +46,7 @@ export default class HuggingFaceService extends LLMService {
   }
 
   async createTextCompletion (params) {
-    this.preprocessParams(params);
+    // this.preprocessParams(params);
 
     console.debug(`huggingface completion params:`, params);
 
@@ -57,6 +59,7 @@ export default class HuggingFaceService extends LLMService {
     // Also vision models with images need to ignore "tools".
     return [
       'openai/gpt-oss-120b',
+      'remyxai/SpaceOm',
       'Qwen/Qwen3-Coder-480B-A35B-Instruct',
       'Qwen/Qwen3-Coder-30B-A3B-Instruct',
       'Qwen/Qwen2.5-72B-Instruct',
@@ -82,6 +85,8 @@ export default class HuggingFaceService extends LLMService {
     if (!_.isObject(message)) { return }
 
     if (_.isArray(message.tool_calls)) {
+      console.log(`Got a message with tool_calls attached:`, message.tool_calls);
+
       // The tool_calls message needs a "content": "" field, which HF requires but omits.
       message.content = "";
 
